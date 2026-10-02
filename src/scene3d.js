@@ -30,10 +30,11 @@ function labelStroke(width = 1.7, height = .75) {
 }
 
 export class BakeryStage {
-  constructor(container, { station = 'counter', order = null, reducedMotion = false } = {}) {
+  constructor(container, { station = 'counter', order = null, progress = {}, reducedMotion = false } = {}) {
     this.container = container;
     this.station = station;
     this.order = order;
+    this.progress = progress;
     this.reducedMotion = reducedMotion;
     this.time = 0;
     this.destroyed = false;
@@ -134,8 +135,20 @@ export class BakeryStage {
     this.box(4.2, .18, 2.2, this.white, 2, -.35, .2);
     const book = this.box(1.55, .16, 1.25, this.paper, .9, -.05, .15); book.rotation.y = -.25;
     const flyers = new THREE.Group();
-    for (let i = 0; i < 3; i++) { const page = outlined(new THREE.BoxGeometry(1.35, .04, .9), this.white); page.position.set(i * .08, i * .08, i * .04); page.rotation.y = .12 * i; flyers.add(page); }
+    const flyerCount = Math.max(0, 3 - (this.progress.runsCancelled || 0));
+    for (let i = 0; i < flyerCount; i++) { const page = outlined(new THREE.BoxGeometry(1.35, .04, .9), this.white); page.position.set(i * .08, i * .08, i * .04); page.rotation.y = .12 * i; flyers.add(page); }
     flyers.position.set(2.8, -.08, .1); this.group.add(flyers);
+    const noteCount = Math.min(6, this.progress.regulars || 0);
+    for (let i = 0; i < noteCount; i++) {
+      const note = this.box(.72, .62, .04, i % 2 ? this.paper : this.white, -4.5 + (i % 3) * .9, 3.1 - Math.floor(i / 3) * .85, -2.88);
+      note.rotation.z = Math.sin(i * 3.7) * .08;
+      this.add(new THREE.Mesh(new THREE.SphereGeometry(.055, 7, 5), this.ink), note.position.x, note.position.y + .22, -2.82);
+    }
+    if ((this.progress.regulars || 0) >= 6) {
+      const tea = outlined(new THREE.CylinderGeometry(.34, .28, .62, 12), this.white); tea.position.set(-.05, -.02, .65); this.group.add(tea);
+      const handle = new THREE.Mesh(new THREE.TorusGeometry(.25, .045, 6, 14, Math.PI * 1.5), this.ink); handle.position.set(.32, -.02, .65); handle.rotation.y = Math.PI / 2; this.group.add(handle);
+      this.steam = Array.from({length:2},(_,i)=>{ const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(-.12+i*.24,.34,.65),new THREE.Vector3(.04+i*.2,.75,.65),new THREE.Vector3(-.08+i*.2,1.2,.65)]); const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(12)),new THREE.LineBasicMaterial({color:INK,transparent:true,opacity:.4})); this.group.add(line);return line;});
+    }
     this.floaters = [book, flyers];
   }
 

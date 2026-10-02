@@ -86,12 +86,14 @@ function renderWelcome() {
   const challenge = dailyChallenge(new Date());
   const currentSave = loadGame();
   const resumable = currentSave?.session && currentSave.session.mode === 'story' && currentSave.session.phase !== 'complete';
+  const flyerRuns = Math.max(0, 3 - (profile.advertising?.runsCancelled || 0));
+  const flyerLabels = ['Fresh baking today!', 'Neighborhood treats', 'Please visit us!'];
   app.innerHTML = `<main class="welcome app-shell">
-    <section class="welcome-scene" aria-label="Grandma stands behind her counter with her recipe book and three stacks of advertising flyers.">
+    <section class="welcome-scene" aria-label="Grandma stands behind her counter with her recipe book, ${flyerRuns} planned flyer runs, and ${profile.regulars?.length || 0} notes from regular customers.">
       <div id="three-welcome" class="three-stage welcome-stage" aria-hidden="true"></div>
       <div class="welcome-art"><div class="grandma-hero">${character(GRANDMA, 'neutral')}</div></div>
       <div class="recipe-book"><strong>Grandma’s recipes</strong><span>Butter, patience & a pinch of joy.</span></div>
-      <div class="flyer-stack" aria-label="Three planned flyer runs"><div class="flyer">Fresh baking today!</div><div class="flyer">Neighborhood treats</div><div class="flyer">Please visit us!</div></div>
+      ${flyerRuns ? `<div class="flyer-stack" aria-label="${flyerRuns} planned flyer runs">${flyerLabels.slice(0, flyerRuns).map(label => `<div class="flyer">${label}</div>`).join('')}</div>` : '<div class="flyer-stack" aria-label="All flyer runs cancelled"><div class="flyer">Tea time at last!</div></div>'}
     </section>
     <section class="welcome-copy">
       ${wordmark()}
@@ -118,7 +120,11 @@ function renderWelcome() {
 function mountVisual(id, visualStation = station, order = selectedOrder()) {
   threeStage?.destroy?.();
   const host = document.getElementById(id);
-  threeStage = host ? createBakeryStage(host, { station: visualStation, order, reducedMotion: profile.settings?.reducedMotion || matchMedia('(prefers-reduced-motion: reduce)').matches }) : null;
+  const progress = {
+    regulars: profile.regulars?.length || 0,
+    runsCancelled: profile.advertising?.runsCancelled || 0,
+  };
+  threeStage = host ? createBakeryStage(host, { station: visualStation, order, progress, reducedMotion: profile.settings?.reducedMotion || matchMedia('(prefers-reduced-motion: reduce)').matches }) : null;
 }
 
 function startGame(mode) {
