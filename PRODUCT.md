@@ -28,3 +28,5 @@ Existing recipe, customer, scoring, progression, and business modules in `src/`;
 ## Latest asset direction
 
 The user supplied 18 original transparent PNGs, including the Grandma and customer sheet, explicitly superseding the initial zero-image restriction for these files. Keep their original appearance. Use static original character crops; remove redrawn characters, additional shading, 3D treatment and character animations. The core game remains interactive with explicit preparation progress.
+
+The latest gameplay request authorizes moving the original whisk, tray, piping bag and kettle in response to drag/hold input, smooth frame-driven meters, faster baking, direct icing on cookies and cupcakes, and visible liquid pouring. This replaces the static-tool and separate-guide restriction; original asset files and static character appearances remain preserved.

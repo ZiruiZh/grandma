@@ -1,0 +1,7 @@
+.git
+.impeccable
+.qa
+dist
+tests
+*.md
+server.mjs

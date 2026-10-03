@@ -461,3 +461,66 @@ p { margin-bottom:16px; }
 .hero-profile,.customer-figure,.service-moment,.pastry { animation:none!important; transform:none; }
 .ingredient-btn:hover svg,.portion-target.filled,.ticket.new { animation:none; transform:none; }
 @media (min-width:700px) { .oven-workspace { grid-template-columns:180px 1fr; align-items:center; gap:45px; } .oven-illustration { width:180px; } }
+
+/* Preparation gestures move intact drawings; Grandma and customers stay still. */
+.preparation-meter { width:100%; height:4px; background:#e8e8e8; overflow:hidden; }
+.preparation-meter > span { display:block; width:100%; height:100%; background:var(--ink); transform:scaleX(var(--progress,0)); transform-origin:left; }
+.preparation-readout { font-size:12px; font-variant-numeric:tabular-nums; margin:14px 0 20px; color:var(--ink); }
+.mix-zone { width:280px; max-width:100%; height:265px; position:relative; touch-action:none; user-select:none; cursor:grab; }
+.mix-zone.is-working { cursor:grabbing; }
+.bowl-base,.bowl-front { position:absolute; left:6%; top:92px; width:88%; pointer-events:none; }
+.bowl-base svg,.bowl-front svg { width:100%; height:auto; }
+.bowl-front { z-index:4; clip-path:inset(35% 0 0 0); }
+.whisk-control { position:absolute; z-index:3; width:58px; height:145px; left:calc(50% - 29px); top:13px; padding:0; border:0; background:none; transform-origin:50% 86%; cursor:grab; touch-action:none; }
+.whisk-grip { display:block; width:100%; height:100%; transform:rotate(180deg); }
+.whisk-grip svg { width:100%; height:100%; }
+.mixture-rings { position:absolute; left:calc(50% - 76px); top:111px; width:152px; height:36px; z-index:2; pointer-events:none; }
+.mixture-rings i { position:absolute; inset:3px 7px; border:1px solid #bcb0a5; border-radius:50%; }
+.mixture-rings i:nth-child(2) { inset:10px 20px; border-color:#dacbb9; }
+.mixture-rings i:nth-child(3) { inset:15px 37px; border-color:#80786c; }
+.oven-workspace { align-items:start; }
+.oven-playground { display:grid; justify-items:center; gap:20px; min-width:0; }
+.oven-illustration { position:relative; width:220px; max-width:100%; }
+.oven-door-target { position:absolute; left:19%; top:43%; width:66%; height:39%; border:1px dashed #aaa; border-radius:0; background:rgb(255 255 255 / 70%); display:grid; place-items:center; padding:8px; font-size:10px; cursor:pointer; }
+.oven-door-target:disabled { opacity:1; cursor:default; color:var(--ink); }
+.oven-door-target.drop-ready { border:2px dashed var(--ink); background:#f0e9dd; }
+.oven-inserted { display:block; width:65px; height:65px; }
+.oven-inserted svg { width:100%; height:100%; }
+.tray-handle { display:grid; justify-items:center; gap:8px; border:0; background:none; min-height:100px; padding:0; cursor:grab; font-size:10px; touch-action:none; }
+.interactive-tray { display:block; position:relative; width:140px; height:96px; }
+.interactive-tray > svg { width:100%; height:100%; }
+.tray-pastries { position:absolute; inset:25% 16% 10%; display:flex; align-items:center; justify-content:center; gap:6px; pointer-events:none; }
+.tray-pastries svg { width:48px; height:48px; }
+.preparation-ghost { position:fixed; z-index:120; top:0; left:0; width:120px; min-height:70px; border:0; margin:0; padding:0; background:white; color:var(--ink); pointer-events:none; text-align:center; font-size:10px; }
+.preparation-ghost .interactive-tray { width:120px; height:85px; }
+.preparation-ghost > svg { width:48px; height:48px; margin:auto; }
+.preparation-ghost .tray-pastries svg { width:38px; height:38px; }
+.bake-band { background:linear-gradient(90deg,#eee 0 var(--golden-start,35%),#aaa var(--golden-start,35%) var(--golden-end,80%),#444 var(--golden-end,80%) 100%); }
+.decoration-bench { width:100%; }
+.decoration-bench .decor-canvas { width:250px; max-width:100%; height:250px; margin:0 0 20px; overflow:visible; }
+.decor-canvas.can-pipe { touch-action:none; cursor:crosshair; }
+.decor-canvas .decor-pastry { width:100%; height:100%; display:grid; place-items:center; }
+.decor-pastry svg { width:100%; height:100%; }
+.icing-layer { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.piping-guide.has-icing { opacity:0; }
+.piping-tool { position:absolute; z-index:2; width:64px; height:64px; transform:translate(-6px,-58px); pointer-events:none; display:none; }
+.piping-tool.is-piping { display:block; }
+.piping-tool svg { width:100%; height:100%; }
+.pour-scene { position:relative; width:260px; height:310px; max-width:100%; margin:auto; touch-action:none; }
+.live-cup { position:absolute; width:220px; height:260px; bottom:0; left:calc(50% - 110px); }
+.live-cup-art { width:100%; height:100%; }
+.pour-tool { position:absolute; z-index:2; width:68px; height:88px; left:calc(50% - 45px); top:0; padding:0; border:0; background:none; cursor:grab; transform-origin:25% 80%; touch-action:none; }
+.pour-tool svg { width:100%; height:100%; }
+.pour-stream { position:absolute; z-index:1; width:5px; height:86px; top:75px; left:calc(50% - 12px); background:#dacbb9; border-radius:3px; transform:scaleY(0); transform-origin:top; pointer-events:none; }
+.is-pouring .pour-stream { transform:scaleY(1); }
+.at-fill-line .cup-fill-line { stroke:#80786c; stroke-width:2.5; }
+.pour-hint { position:absolute; bottom:-12px; width:100%; margin:0; text-align:center; font-size:10px; color:var(--grey); }
+.live-cup.drop-ready { outline:1px dashed var(--ink); outline-offset:4px; }
+.fill-gauge { display:flex; flex-direction:column; align-items:stretch; gap:0; font-size:12px; }
+.fill-gauge .preparation-readout { margin:14px 0; }
+.drink-finished .cup-fill-line { display:none; }
+@media (min-width:700px) { .oven-workspace { grid-template-columns:250px 1fr; gap:35px; } .oven-illustration { width:220px; } .mix-worktop { grid-template-columns:280px 1fr; align-items:center; gap:35px; } .drink-workspace { grid-template-columns:260px 1fr; align-items:center; gap:35px; } }
+@media (prefers-reduced-motion:reduce) { .mixture-rings { transform:none!important; } .whisk-control { transform:none!important; } .pour-tool { transform:none!important; } }
+.reduce-motion .mixture-rings,.reduce-motion .whisk-control,.reduce-motion .pour-tool { transform:none!important; }
+.preparation-meter > span { transition:transform 90ms linear; }
+#mix-hold,#drink-hold { touch-action:none; }

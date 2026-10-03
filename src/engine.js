@@ -329,15 +329,20 @@ export function dispatch(session, profile, action) {
       order.bakeQuality = bakingQuality(order, profile); order.stage = 'baked';
       return success(order.bakeQuality >= 0.95 ? 'Golden and lovely. Time for the finishing touch!' : 'Tray removed. You can finish it or remake the pastry.', 'bake-remove', { orderId: order.id });
     case 'frosting':
-      if (order.family !== 'cupcake' || !['baked', 'decorating', 'ready'].includes(order.stage)) return fail('Bake a cupcake before choosing its frosting.');
-      if (!RECIPES.cupcake.frostings.includes(action.flavor)) return fail('Choose vanilla, chocolate, or strawberry frosting.');
+      if (!RECIPES[order.family].frostings.length || !['baked', 'decorating', 'ready'].includes(order.stage)) return fail('Bake a cookie or cupcake before choosing its icing.');
+      if (!RECIPES[order.family].frostings.includes(action.flavor)) return fail('Choose an icing from this recipe’s shelf.');
       order.decoration.frosting = action.flavor; order.decoration.coverage = 0; order.decoration.points = []; order.stage = 'decorating'; invalidatePackage();
       return success(`${titleCase(action.flavor)} frosting is in the piping bag.`, 'frosting', { orderId: order.id });
     case 'decorate':
       if (!['baked', 'decorating'].includes(order.stage)) return fail('Bake the pastry before adding finishing touches.');
       if (order.family === 'cupcake' && !order.decoration.frosting) return fail('Choose a frosting before piping.');
+      if (order.family === 'cookie' && !order.decoration.frosting) order.decoration.frosting = 'vanilla';
       order.stage = 'decorating'; order.decoration.coverage = clamp(order.decoration.coverage + amount(0.2));
-      if (Number.isFinite(action.x) && Number.isFinite(action.y) && order.decoration.points.length < 40) order.decoration.points.push({ x: clamp(action.x), y: clamp(action.y) });
+      if (Number.isFinite(action.x) && Number.isFinite(action.y) && order.decoration.points.length < 360) order.decoration.points.push({ x: clamp(action.x), y: clamp(action.y), start: !!action.strokeStart });
+      else if (!Number.isFinite(action.x) && !Number.isFinite(action.y) && order.decoration.points.length < 350) {
+        const cy = order.family === 'cupcake' ? .27 : .5;
+        for (let i = 0; i < 10; i++) { const angle = i / 9 * Math.PI * 2; order.decoration.points.push({x:.5 + Math.cos(angle)*.17,y:cy + Math.sin(angle)*.13,start:i === 0}); }
+      }
       return success(order.decoration.coverage >= 0.75 ? 'A beautiful finishing touch!' : 'Follow the little guide with gentle taps or strokes.', 'decorate', { orderId: order.id });
     case 'topping':
       if (order.family !== 'cupcake' || !['baked', 'decorating', 'ready'].includes(order.stage)) return fail('Cookie and muffin mix-ins go into the mixing bowl.');

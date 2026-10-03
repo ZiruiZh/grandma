@@ -141,6 +141,18 @@ export function cup(options = {}) {
   return suppliedTool(key, `${options.type || 'cup'}, ${Math.round(clamp(options.fill ?? .8)*100)}% full${options.lid ? ', takeaway lid added' : ''}`, 'drink-cup');
 }
 
+/** A live liquid layer beneath the unchanged transparent cup drawing. */
+export function liveCup(prep = {}) {
+  const fill = clamp(prep.fill || 0);
+  const key = prep.type === 'tea' ? 'tea-cup' : prep.type === 'hot-chocolate' ? 'chocolate-cup' : 'coffee-cup';
+  const clipId = `live-liquid-${key}`;
+  const color = prep.extras?.includes('milk') ? '#dacbb9' : prep.type === 'tea' ? '#e4d8be' : prep.type === 'hot-chocolate' ? '#c8b5a5' : '#bcb0a5';
+  const nest = suppliedTool(key).replace('<svg ', '<svg x="35" y="65" width="150" height="180" ');
+  const shape = key === 'tea-cup' ? 'M48 100H148L132 217H68Z' : key === 'chocolate-cup' ? 'M44 112H143L129 220H63Z' : 'M78 124H143L134 218H85Z';
+  const extras = prep.extras || [];
+  return svg('0 0 220 260', `<defs><clipPath id="${clipId}"><path d="${shape}"/></clipPath></defs><g clip-path="url(#${clipId})"><rect data-cup-liquid x="38" y="${218-fill*133}" width="120" height="200" fill="${color}"/><ellipse data-cup-surface cx="103" cy="${218-fill*133}" rx="53" ry="5" fill="#f0e9dd" style="opacity:${fill > .01 ? 1 : 0}"/></g>${nest}<path class="cup-fill-line" d="M45 112h114" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4"/><text x="166" y="116" font-size="11" fill="currentColor">80%</text>${extras.includes('marshmallows') ? '<g fill="white" stroke="#555" stroke-width="1"><rect x="83" y="105" width="13" height="11" rx="3"/><rect x="99" y="109" width="13" height="11" rx="3"/><rect x="116" y="103" width="13" height="11" rx="3"/></g>' : ''}${extras.includes('cream') ? '<path d="M74 107q-8-10 9-13-3-9 10-10 6-1 9-7 11 10 6 18 13-2 10 12Z" fill="white" stroke="#555" stroke-width="1"/>' : ''}${prep.lid ? '<path d="M50 103h100l5 8H45Z" fill="white" stroke="#555" stroke-width="1.5"/>' : ''}`, 'Your cup, live fill line at eighty percent', 'live-cup-art');
+}
+
 export function bowl(progress = 0, ingredients = 0) {
   const nest = (art,x,y,w,h) => art.replace('<svg ', `<svg x="${x}" y="${y}" width="${w}" height="${h}" `);
   return svg('0 0 280 200', `${nest(suppliedTool('bowl'),35,60,160,120)}${nest(suppliedTool('whisk'),201,23,53,135)}`, 'Original mixing bowl and whisk', 'mixing-bowl');

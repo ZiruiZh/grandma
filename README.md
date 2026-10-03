@@ -2,7 +2,7 @@
 
 An original browser game about helping Grandma grow a bakery through care, good pastries, and happy returning neighbors. The mobile-first white-and-ink interface follows the HEYTEA reference (https://www.heytea.com/). Food and ingredient drawings use the supplied original PNGs without recoloring or shading. Characters use static viewport crops of the supplied transparent character sheet. Headings use reusable SVG lettering; controls use local system fonts.
 
-The app bundles all 18 unchanged PNGs supplied by the user. The original drawings are static; no redraws, recoloring, shading, or 3D effects are applied. Reusable HTML/CSS and SVG supply layout, lettering, and remaining controls. There are no external fonts, videos, icon packs, sprites, audio downloads, or runtime libraries.
+The app bundles all 18 unchanged PNGs supplied by the user. Original PNG files remain unchanged. Characters stay static; preparation tools move in response to your input, and icing/liquid use separate live SVG layers. No redraws or 3D effects are applied. Reusable HTML/CSS and SVG supply layout, lettering, and remaining controls. There are no external fonts, videos, icon packs, sprites, audio downloads, or runtime libraries.
 
 ## Run locally
 
@@ -34,7 +34,7 @@ Quick Play welcomes first-time players with three customers. Story Mode follows 
 
 The selected ticket identifies which bowl, tray, drink, and finished items you are working on. Switch tickets to work on another order. Remake an item if needed; the small ingredient charge is recoverable through later sales. Sound is optional. Pause and relaxed play are available, and the game pauses when its browser tab is hidden.
 
-The controls support pointer and touch input. Focus buttons with Tab and activate them with Enter or Space; use number keys 1–5 to switch stations and Escape to pause. Tap/select-and-place controls provide alternatives to drawing or dragging, including the “Pipe a little” button. Reduced-motion preferences are respected. The baking display uses explicit underbaked, golden, and overbaked status text and a live timer while keeping the original pastry drawing unchanged.
+The controls support pointer and touch input. Focus buttons with Tab and activate them with Enter or Space; use number keys 1–5 to switch stations and Escape to pause. Drag the whisk inside the bowl, slide the tray into the oven, pipe icing directly over cookies or cupcakes, and pull the kettle down to pour. Mixing, filling, and the oven countdown update continuously. Cookies become golden in 7 seconds; muffins in 8 seconds; cupcakes in 7.5 seconds, with a generous golden window. Hold, tap and keyboard controls remain available as alternatives. Reduced-motion preferences are respected. The baking display uses explicit underbaked, golden, and overbaked status text and a live timer while keeping the original pastry drawing unchanged.
 
 ## Progress and game economy
 
@@ -74,6 +74,7 @@ The game is designed to introduce the bakery and its products, encourage repeat 
 - `index.html` — browser entry point.
 - `src/app.js` — screen rendering, controls, and browser lifecycle.
 - `src/engine.js` — game state, actions, timers, progression, scoring, and local saves.
+- `src/interactions.js` — pointer capture, frame-driven preparation, drag targets and icing strokes.
 - `src/data.js` — recipes, customers, story scheduling, dialogue, and upgrades.
 - `src/business-config.js` — optional real bakery configuration.
 - `src/art.js` — reusable artwork composition, lettering, and remaining vector controls.
@@ -91,3 +92,9 @@ The game is designed to introduce the bakery and its products, encourage repeat 
 Run `npm test` after changing recipes or rules. The deterministic tests cover complete orders, ticket isolation, oven capacity and pause behavior, recoverable remakes, scoring, loyalty and advertising bookkeeping, upgrades, word-of-mouth referrals, the five-day return schedule, saving/resuming, safe business links, and public offers.
 
 After a visual change, inspect portrait phones, landscape phones, tablets, and desktop. Test a complete pastry-and-drink order, keyboard mixing/pouring, the ticket drawer, pause, sound, and reduced motion. Serve `dist/` separately and check for missing modules. See `REQUIREMENTS_CHECKLIST.md` for the latest evidence and remaining device-specific checks.
+
+## Vercel hosting
+
+Live game: https://grandma-bakeria.vercel.app
+
+`vercel.json` builds the dependency-free app with `npm run build` and serves `dist/`. After signing into Vercel, publish updates with `npx vercel deploy --prod --project grandma-bakeria --scope kuan-yis-projects`. Vercel credentials and local project linking stay outside Git.

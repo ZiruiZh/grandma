@@ -418,3 +418,43 @@ test('daily challenge is deterministic, supported, and never penalizes missed da
   while (session.queue.length) completeOrder(session, profile);
   assert.equal(profile.dailyCompletions[session.dailyRecipe.date], 100);
 });
+
+test('continuous input accepts frame-sized amounts and stops cleanly at completion', () => {
+  const {profile,session} = setup();
+  const order = take(session,profile);
+  for (const ingredient of order.requiredIngredients) act(session,profile,'add-ingredient',{ingredient});
+  for (let frame = 0; frame < 120; frame++) act(session,profile,'mix',{amount:1/240});
+  assert.ok(Math.abs(order.mixProgress-.5) < 1e-10);
+  act(session,profile,'pause');
+  assert.equal(dispatch(session,profile,{type:'mix',amount:1/240}).ok,false);
+  assert.ok(Math.abs(order.mixProgress-.5) < 1e-10);
+  act(session,profile,'resume');
+  act(session,profile,'mix',{amount:.501});
+  assert.equal(order.mixProgress,1);
+  assert.equal(order.stage,'portioning');
+  act(session,profile,'select-cup');
+  act(session,profile,'select-drink',{drinkType:'tea',variety:'breakfast'});
+  for (let frame = 0; frame < 300; frame++) act(session,profile,'fill-drink',{amount:.8/300});
+  assert.ok(Math.abs(order.drinkPrep.fill-.8) < 1e-10);
+});
+
+test('optional cookie icing retains separate strokes through saves without changing its recipe score', () => {
+  const {profile,session} = setup();
+  const order = take(session,profile);
+  mixAndPortion(session,profile,order);
+  act(session,profile,'start-bake');
+  tick(session,profile,getBakeWindow(order,profile).goldenStart+.5);
+  act(session,profile,'remove-bake');
+  act(session,profile,'decorate',{amount:.1,x:.3,y:.4,strokeStart:true});
+  act(session,profile,'decorate',{amount:.1,x:.6,y:.5});
+  act(session,profile,'decorate',{amount:.1,x:.4,y:.6,strokeStart:true});
+  assert.equal(order.decoration.frosting,'vanilla');
+  assert.deepEqual(order.decoration.points.map(p=>p.start),[true,false,true]);
+  assert.equal(dispatch(session,profile,{type:'frosting',flavor:'strawberry'}).ok,false);
+  act(session,profile,'finish-decoration');
+  finishDrink(session,profile,order);
+  act(session,profile,'package',{packaging:'tray'});
+  assert.equal(scoreOrder(order,session,profile).total,100);
+  const copy = JSON.parse(JSON.stringify(session));
+  assert.deepEqual(copy.orders[0].decoration.points,order.decoration.points);
+});

@@ -18,6 +18,19 @@ colors:
   guide-strawberry: "#d4d4d4"
   guide-sprinkle: "#191919"
   inactive-step: "#ccc"
+  preparation-track: "#e8e8e8"
+  liquid-coffee: "#bcb0a5"
+  liquid-milk: "#dacbb9"
+  liquid-tea: "#e4d8be"
+  liquid-chocolate: "#c8b5a5"
+  liquid-surface: "#f0e9dd"
+  icing-vanilla: "#fffaf0"
+  icing-strawberry: "#efd5d8"
+  icing-chocolate: "#cdb8a5"
+  icing-edge: "#80786c"
+  sprinkle-pink: "#bba4a0"
+  sprinkle-ink: "#333"
+  extra-outline: "#555"
 typography:
   progress-caption:
     fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
@@ -192,6 +205,7 @@ rounded:
   object-corner-24: "24px"
   object-corner-27: "27px"
   object-corner-28: "28px"
+  stream: "3px"
 spacing:
   tight: "8px"
   small: "12px"
@@ -247,6 +261,16 @@ components:
     rounded: "{rounded.hold}"
     padding: "10px 15px"
     typography: "{typography.hold-label}"
+  mix-workstation:
+    backgroundColor: "{colors.paper}"
+    width: "280px"
+    height: "265px"
+  live-cup:
+    width: "220px"
+    height: "260px"
+  icing-canvas:
+    width: "250px"
+    height: "250px"
 ---
 
 # Design System: Grandma’s Bakeria
@@ -257,7 +281,7 @@ components:
 
 This built world combines the user’s HEYTEA reference for open white surfaces, restrained navigation, and generous spacing with the owner’s original bakery drawings. Eighteen uploaded PNGs remain byte-for-byte unchanged, and seven Grandma/customer figures are static clipped viewport crops of the exact transparent character sheet supplied by the user. Their faces, proportions, marks, and transparency remain intact.
 
-The interface stays quiet around these drawings: original lowercase SVG lettering, small regular or medium local sans text, thin separators, simple actions, and explicit preparation progress. Warmth comes from the supplied drawings and Grandma’s story. The user rejected altered assets, redrawn characters, additional shading, 3D treatment, character animation, generic bold sans headings, and gray card surfaces.
+The interface stays quiet around these drawings: original lowercase SVG lettering, small regular or medium local sans text, thin separators, simple actions, direct preparation gestures, and smooth numerical progress. Warmth comes from the supplied drawings and Grandma’s story. The user rejected altered assets, redrawn characters, additional shading, 3D treatment, character animation, generic bold sans headings, and gray card surfaces.
 
 **Key Characteristics:**
 
@@ -265,7 +289,7 @@ The interface stays quiet around these drawings: original lowercase SVG letterin
 - Seven static original character crops with their original faces and transparency.
 - Original reusable SVG stroke lettering for short display headings.
 - Floating artwork, open white surfaces, and small widely spaced regular navigation.
-- Preparation state in words, numerical progress, checks, tickets, and controls.
+- Direct whisking, tray loading, icing, and pouring with smooth progress and accessible alternatives.
 
 ## Colors
 
@@ -275,6 +299,12 @@ The interface uses white paper, near-black ink, and neutral gray for supporting 
 
 - **Bakery Ink** (ink): text, SVG lettering, active marks, focus outlines, and control progress.
 
+### Secondary
+
+- **Pale Liquid Tones** (liquid-coffee, liquid-milk, liquid-tea, liquid-chocolate, liquid-surface): live contents beneath the unchanged transparent cup drawing, plus restrained mixing and pouring feedback.
+- **Icing Tones** (icing-vanilla, icing-strawberry, icing-chocolate, icing-edge): direct preparation strokes layered above the unchanged pastry.
+- **Sprinkle and Extra Detail** (sprinkle-pink, sprinkle-ink, extra-outline): preparation additions and outlines, not a new page palette.
+
 ### Neutral
 
 - **Open Paper** (paper): permanent page surfaces and temporary sheets.
@@ -282,13 +312,13 @@ The interface uses white paper, near-black ink, and neutral gray for supporting 
 - **Fine Rule** (line) and **Secondary Rule** (secondary-rule): separators and supporting action underlines.
 - **Meter Track** (meter-track) and **Patience Fill** (wait-fill): thin progress and patience feedback.
 - **Bake Band** (bake-light, bake-middle, bake-dark): the three explicit cooking ranges in the interface; never an image recolor.
-- **Practice Marks** (guide-dark, guide-chocolate, guide-strawberry, guide-sprinkle): control swatches and separate frosting practice marks.
+- **Practice Marks** (guide-dark, guide-chocolate, guide-strawberry, guide-sprinkle): retained legacy control/practice CSS; current direct icing uses the preparation tones above.
 - **Inactive Step** (inactive-step): tutorial progress dots.
 - **Window Tint** (window-tint): retained oven-window CSS; the current oven surface uses the supplied oven drawing.
 
-The original PNG pixels are the authority for artwork color and shading. Preserve their appearance instead of mapping them onto interface tokens. The baking-band gradient is functional state feedback, not a decorative surface treatment.
+The original PNG pixels remain authoritative and unchanged. Pale liquid and icing colors intentionally communicate preparation in separate live layers beneath or above those originals. They do not recolor the source images or extend into broad interface surfaces. The baking-band gradient is functional state feedback.
 
-**The Original-Pixels Rule.** Preserve supplied artwork exactly. Interface state may change while the food, tools, cups, and characters remain as drawn.
+**The Original-Pixels Rule.** Preserve the supplied PNG bytes and static characters. Move intact preparation tools and add separate live liquid or icing layers when the player acts.
 
 ## Typography
 
@@ -319,7 +349,7 @@ Phones stack workspaces, keep a persistent compact ticket control, and use five 
 
 Compact phones have an adjustment (360px). Short landscape screens (550px maximum height) use the compact ticket drawer and fixed station actions even at tablet or desktop widths, reduce workspace spacing, and suppress the progress ribbon. The working area and key actions remain reachable.
 
-Preparation artwork stays separate from state controls. The oven places a crop of the supplied oven beside an open pastry shelf. Decoration shows the original pastry above its progress text and a separate practice guide. The scrapbook exposes the complete supplied ingredient and tool sheets in an expandable illustrated pantry.
+Preparation gestures happen on the artwork’s working area. The whisk sits inside the bowl behind its front edge; the tray moves into a marked oven door; icing appears directly on the cookie or cupcake; liquid rises beneath the original cup. Numerical readouts and slim progress meters remain nearby. The scrapbook still exposes the complete supplied ingredient and tool sheets.
 
 ## Elevation & Depth
 
@@ -327,13 +357,13 @@ Permanent interface surfaces have no box shadows. Depth comes from the source dr
 
 **The Flat Paper Rule.** Separate permanent regions with space and light rules; reserve dimmed backdrops for temporary focus sheets.
 
-Supplied characters, food, tools, and cups are static. Final CSS overrides remove image animation, transforms, ingredient-hover rotation, portion animation, and ticket reveal. Existing keyframe declarations are not authority to restore these effects. A brief toast entrance remains an interface response; reduced-motion preferences remove animation and transition behavior. Progress, percentages, timers, checks, and preparation labels carry the work.
+Characters stay static and all 18 source PNGs remain unchanged. Preparation tools move only in response to the player: the whisk translates and turns inside the bowl, a tray or extra follows a drag, the kettle tips to pour, and the piping bag follows the icing gesture. The pointer controller updates progress with requestAnimationFrame; the slim meter smooths transform updates with a short linear transition. Liquid and icing are separate SVG state layers. Reduced motion removes tool transforms and meter transitions while work, percentages, timers, and fallbacks remain available.
 
 ## Shapes
 
-Most interface controls are square, transparent or white rows with underlines. Active station navigation uses a short, slightly tilted rule. Native settings checkboxes and the share field remain familiar controls. Supplied image contours are not recreated in CSS or new SVG paths.
+Most interface controls are square, transparent or white rows with underlines. Active station navigation uses a short, slightly tilted rule. Native settings checkboxes and the share field remain familiar controls. Supplied image contours are retained. Separate SVG paths provide live liquid, icing, and preparation markers.
 
-The frontmatter catalogs the exact existing radius values, including individual corners from irregular shorthands. The hold control retains its four-corner outline; the tray and toast retain their observed irregular corners. The meter has a small radius, circular targets/guides/swatches use percentage rounding, and the share field has its existing field radius. These object-specific values are deliberately retained from the reference-pinned build.
+The frontmatter catalogs the exact existing radius values, including individual corners from irregular shorthands. The legacy hold-control CSS retains its four-corner outline; active hold fallbacks now use the existing underlined secondary button. The tray and toast retain their observed irregular corners. The meter has a small radius, circular targets/guides/swatches use percentage rounding, and the share field has its existing field radius. These object-specific values are deliberately retained from the reference-pinned build.
 
 The legacy-oven-shell and legacy-oven-window entries record CSS still in the file. The current oven unit overrides its shell border and rounding to a plain container, and the current markup uses the supplied oven illustration. Retained geometry does not imply a visible replacement oven.
 
@@ -369,17 +399,23 @@ The welcome pairs a static Grandma portrait crop with small widely spaced links.
 
 A supplied ingredient crop floats over its readable label, with a generous target and an explicit added check. No hover transform is applied to the artwork. Ingredients without supplied drawings retain the existing fallback icon.
 
-### Hold Control
+### Preparation Gestures and Fallbacks
 
-A white irregular outline with an explicit percentage and a bottom ink progress line. Holding, repeated tapping, or keyboard actions advance mixing or pouring. The static original bowl/whisk or cup remains separate from progress feedback.
+The draggable whisk sits inside the original bowl, with its lower section visually behind the bowl’s front edge. Circular movement stirs; holding or repeated tapping and Space/Enter provide alternatives. A slim meter and percentage update smoothly.
 
-### Supplied Artwork and Practice Guide
+The tray can be dragged into the marked original oven door, or loaded using the secondary button. Base recipes reach golden in seven to eight seconds with a nine-second golden window; upgrades and relaxed mode extend the window. Decimal countdowns, labels, and persistent alerts make the faster timing readable.
+
+Icing is dragged directly across the cookie or cupcake in a bounded SVG layer, with rounded strokes and pale flavor tones. A button pipes without dragging. Muffins retain their finishing check.
+
+The kettle tips while pouring, liquid rises below the unchanged cup drawing, and a visible line marks the 80% target. Hold/tap/keyboard pouring alternatives remain available. Extras can be dragged or tapped into the cup.
+
+### Supplied Artwork and Live Preparation
 
 Use src/supplied-assets.js for SVG viewport crops of the unchanged local PNGs. The 18 unchanged uploads include separate food/ingredient drawings, the ingredient and tool sheets, and the exact transparent customersandgrandma.png uploaded by the user. That character file is bundled as customer-sheet.png at its original dimensions (3200 by 2000). Seven crop regions preserve the original cast, including its nonhuman characters. Each original character/tool crop has an explicit clip rectangle matching its viewport, preventing neighboring sheet drawings from appearing when its display dimensions differ. Expressions remain as drawn; reaction text provides feedback.
 
-The supplied tools sheet provides static bowl, whisk, scoop, piping bag, kettle, oven, cups, and selected interface icons. Raw, golden, and overbaked pastries reuse the original food image; labels, timer, and progress band communicate preparation state. Drink fill and extras remain in controls and tickets, without clipped liquid fills or extra image marks.
+The supplied tools sheet provides intact bowl, whisk, scoop, piping bag, kettle, oven, cups, and selected interface icons. Preparation controllers transform the tool containers without altering image bytes. Raw, golden, and overbaked pastries still reuse the original food image; cooking state stays in labels, timers, and the progress band. Live drink contents, surface, extras, and lid are separate preparation layers.
 
-The decoration bench displays the original pastry unchanged. Frosting and sprinkles appear only on the separate practice guide; a percentage and sprinkle count report progress. Existing SVG lettering, fallback icons, serving containers, and environmental vignette lines remain alongside the approved images. No browser runtime library is required.
+The decoration bench keeps the original pastry image unchanged while drawing icing directly above it. Elliptical bounds restrict strokes to the edible area, and progress stays readable below. Existing lettering, fallback icons, serving containers, and vignette lines remain. The application’s pointer/RAF controller lives in src/interactions.js; no browser runtime library is required.
 
 ## Do's and Don'ts
 
@@ -389,14 +425,14 @@ The decoration bench displays the original pastry unchanged. Frosting and sprink
 - **Do** use SVG viewports to select the required original artwork without modifying its source.
 - **Do** follow the HEYTEA spacing reference while retaining the owner’s supplied art.
 - **Do** show bake state, fill percentage, extras, satisfaction, and reactions through readable interface feedback.
-- **Do** keep frosting practice separate from the unchanged pastry image.
+- **Do** layer direct icing above the unchanged pastry and live liquid beneath the unchanged cup.
 - **Do** preserve important touch targets, visible focus, persistent tickets and oven alerts, and keyboard or tap alternatives.
 - **Do** retain the existing local font stack and the observed type sizes and object geometry.
 
 ### Don't:
 
-- **Don’t** redraw, recolor, shade, animate, or apply filters or 3D effects to the supplied drawings.
-- **Don’t** replace the supplied raw or baked food with generated SVG versions or add liquid fills to the supplied cups.
+- **Don’t** redraw, recolor, filter, or change the source PNGs, or animate the characters.
+- **Don’t** replace the supplied food, tool, or cup drawing when adding interactive preparation layers.
 - **Don’t** restore generated profile avatars, generic bold sans hero headings, or large gray card surfaces.
 - **Don’t** add remote fonts, stock media, icon packages, or browser runtime libraries.
 - **Don’t** copy HEYTEA’s logo, brand name, or artwork into the game.

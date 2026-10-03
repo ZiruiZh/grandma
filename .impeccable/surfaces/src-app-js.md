@@ -2,7 +2,7 @@
 version: 1
 slug: "src-app-js"
 primary_target: "src/app.js"
-related_targets: ["src/art.js","src/supplied-assets.js","src/styles.css","ASSET_MANIFEST.md"]
+related_targets: ["src/art.js","src/supplied-assets.js","src/styles.css","src/interactions.js","ASSET_MANIFEST.md"]
 ---
 
 # Welcome and bakery game
@@ -27,12 +27,12 @@ Tablet places heading and vignette side by side. Desktop places the static origi
 
 ## Play surfaces and proof
 
-Counter uses the unchanged customer crops. Mixing uses static supplied bowl and whisk crops with numerical progress. Oven uses the supplied oven drawing beside a pastry shelf and explicit cooking feedback. Decorating keeps the pastry untouched and places frosting practice on a separate guide. Drinks use original cup crops while labels and percentage controls explain fill and extras.
+Counter uses the unchanged customer crops. Mixing places the moving original whisk inside the bowl with circular drag, hold, tap, and keyboard alternatives. The tray drags into a marked oven door, with a load button fallback; base recipes reach golden in seven to eight seconds and retain a nine-second golden window. Icing is dragged directly onto the cookie or cupcake in a clipped SVG layer above the unchanged pastry. Drinks use a tipping kettle, live liquid beneath the original cup, an 80% line, and draggable or tappable extras. Progress and timers update smoothly with the pointer/RAF controller.
 
 Phone ticket access is a persistent compact drawer. Wider layouts expose a horizontal rail and then a side rail; short landscape returns to the drawer and fixed station actions. Tickets retain original customer and food drawings with readable order text. The scrapbook’s illustrated pantry displays both complete original ingredient and tool sheets. Results use white receipt rows, fine rules, and status below the heading. Dialogs keep keyboard focus inside and return it on close.
 
 ## Constraints and unresolved decisions
 
-DESIGN.md documents the current built world; ASSET_MANIFEST.md inventories the approved local assets. Eighteen uploaded PNGs remain byte-for-byte unchanged. The user’s exact transparent customersandgrandma.png is bundled as customer-sheet.png at its original dimensions (3200 by 2000). Seven static character regions and the Grandma portrait crop preserve the original faces and transparency. Explicit clip rectangles match the viewports so surrounding figures cannot appear through letterboxing. No redraws, extra image fills, shading, recolors, 3D effects, or character movement are part of this final direction.
+DESIGN.md documents the current built world; ASSET_MANIFEST.md inventories the approved local assets. Eighteen uploaded PNGs remain byte-for-byte unchanged. The user’s exact transparent customersandgrandma.png is bundled as customer-sheet.png at its original dimensions (3200 by 2000). Seven static character regions and the Grandma portrait crop preserve the original faces and transparency. Explicit clip rectangles match the viewports so surrounding figures cannot appear through letterboxing. The latest user direction adds direct preparation gestures and supersedes the earlier static-tool/separate-guide constraint. Source PNG bytes and characters remain unchanged and static. Intact tool containers may move, and separate pale liquid/icing state layers may appear under or over the original drawing.
 
-Preserve the full original game, explicit preparation progress, pause behavior, tap/keyboard alternatives, focus visibility, and persistent oven alerts. No remote media, downloaded font, or browser runtime library is required. Real business details and offers remain conditional on configuration. No artwork-direction decision remains open in this scope.
+Preserve the full original game, explicit preparation progress, pause behavior, tap/keyboard alternatives, focus visibility, and persistent oven alerts. No remote media, downloaded font, or browser runtime library is required. Real business details and offers remain conditional on configuration. The preparation patch continues the same visual world and is intended for the existing production surface at https://grandma-bakeria.vercel.app.

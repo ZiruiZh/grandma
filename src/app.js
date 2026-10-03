@@ -4,7 +4,9 @@ import {
   createProfile, createSession, dispatch, tick, nextDay, dailyChallenge,
   saveGame, loadGame, getBakeWindow, DRINK_FILL_TARGET,
 } from './engine.js';
-import { brandMark, character, pastry, ingredientIcon, toolIcon, icon, cup, bowl, grandmaVignette, handLetter, servingContainer, suppliedArt, suppliedTool } from './art.js';
+import { brandMark, character, pastry, ingredientIcon, toolIcon, icon, cup, bowl, grandmaVignette, handLetter, servingContainer, suppliedArt, suppliedTool, liveCup } from './art.js';
+
+import { bindWorkstations, icingPath, pastryArea } from './interactions.js';
 
 const app = document.querySelector('#app');
 const announcer = document.querySelector('#announcer');
@@ -21,7 +23,9 @@ let shareFallbackUrl = '';
 let toastTimer = 0;
 let lastTick = performance.now();
 let audioContext = null;
-let heldTimer = 0;
+let workstations = null;
+let liveRenderPending = false;
+let lastSave = performance.now();
 let lastCustomerVisual = '';
 const seenTicketIds = new Set();
 const trackedCompletions = new Set();
@@ -238,7 +242,7 @@ function renderMixing() {
       <div class="ingredient-shelf">${INGREDIENTS.map(item => `<button class="ingredient-btn ${order.ingredients.includes(item.id) ? 'added' : ''}" data-ingredient="${item.id}">${ingredientIcon(item.id)}${escapeHtml(item.name)}</button>`).join('')}</div>
       <p class="muted">Add the ingredients on Grandma’s recipe card. A wrong scoop is recoverable, but it costs a little.</p>`;
   } else if (order.stage === 'mixing') {
-    work = `<div class="mix-worktop"><div class="bowl-wrap ${order.mixProgress > 0 && order.mixProgress < 1 ? 'mixing' : ''}">${bowl(order.mixProgress,order.ingredients.length)}</div><div><h3>Stir until smooth</h3><p>Hold the whisk button, or tap it repeatedly.</p><button id="mix-hold" class="hold-button" style="--hold:${pct(order.mixProgress)}"><span>${Math.round(order.mixProgress * 100)}% mixed</span></button></div></div>`;
+    work = `<div class="mix-worktop"><div id="mix-zone" class="mix-zone" role="group" aria-label="Whisking bowl. Drag the whisk in circles."><div class="bowl-base">${suppliedTool('bowl')}</div><div class="mixture-rings" aria-hidden="true"><i></i><i></i><i></i></div><button class="whisk-control" aria-label="Whisk dough. Drag inside the bowl, or hold Space to stir."><span class="whisk-grip">${suppliedTool('whisk')}</span></button><div class="bowl-front" aria-hidden="true">${suppliedTool('bowl')}</div></div><div><h3>Give it a little swirl</h3><p>Drag the whisk around the bowl. Keep stirring until smooth.</p><div class="preparation-meter" data-mix-meter role="progressbar" aria-label="Mixing progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(order.mixProgress*100)}" style="--progress:${order.mixProgress}"><span></span></div><p class="preparation-readout" data-mix-text>${Math.round(order.mixProgress*100)}% mixed</p><button id="mix-hold" class="btn secondary">Hold to stir instead</button></div></div>`;
   } else if (order.stage === 'portioning') {
     work = `<h3>Portion ${order.quantity} ${RECIPES[order.family].singular}${order.quantity > 1 ? 's' : ''}</h3><p>Tap each marked spot. The targets are generous—Grandma isn’t measuring with a ruler.</p><div class="tray-grid">${Array.from({ length: order.quantity }, (_, i) => `<button class="portion-target ${i < order.portions ? 'filled' : ''}" data-portion="${i}" aria-label="${i < order.portions ? 'Filled' : 'Fill'} tray position ${i + 1}">${i < order.portions ? pastry(order, 'raw') : '+'}</button>`).join('')}</div>`;
   } else {
@@ -251,57 +255,44 @@ function stationShell(label, title, content) {
   return `<section class="station"><div class="station-wall"></div><div class="station-counter"></div><div class="station-content">${stationHeading(label, title)}${content}</div></section>`;
 }
 
+function ovenTray(order, cls = '') {
+  return `<span class="interactive-tray ${cls}">${servingContainer('tray')}<span class="tray-pastries">${Array.from({length:order.quantity},()=>pastry(order,'raw')).join('')}</span></span>`;
+}
+
 function renderOven() {
   const order = selectedOrder();
-  const slots = profile.upgrades?.['second-oven'] ? 2 : 1;
   const baking = activeOrders().filter(o => o.stage === 'baking');
   const selectedCanBake = order?.stage === 'ready-to-bake';
-  const window = order ? getBakeWindow(order, profile) : { goldenStart: 12, goldenEnd: 21 };
-  const bakeMax = Math.max(window.goldenEnd + 7, 25);
-  const bakeRatio = order?.stage === 'baking' ? Math.min(1, order.bakeTime / bakeMax) : 0;
-  const qualityLabel = !order ? '' : order.bakeTime < window.goldenStart ? 'Underbaked' : order.bakeTime <= window.goldenEnd ? 'Golden — take it out!' : 'Getting dark';
-  const slotsHtml = Array.from({ length: slots }, (_, i) => {
+  const window = order ? getBakeWindow(order,profile) : {goldenStart:7,goldenEnd:16};
+  const max = window.goldenEnd + 4;
+  const selectedBake = order?.stage === 'baking';
+  const qualityLabel = selectedBake ? (order.bakeTime < window.goldenStart ? `Golden in ${(window.goldenStart-order.bakeTime).toFixed(1)}s` : order.bakeTime <= window.goldenEnd ? 'Golden — take it out!' : 'Overbaked — you can remake it') : 'Seven to eight seconds to golden. Plenty of time to take it out.';
+  const slotsHtml = Array.from({length:session.ovenSlots},(_,i)=> {
     const item = baking[i];
-    return `<div class="oven-slot ${item ? 'baking' : ''}">${item ? `<div><div class="bake-pastries">${Array.from({length:item.quantity},()=>pastry(item, item.bakeTime < getBakeWindow(item,profile).goldenStart ? 'raw' : item.bakeTime <= getBakeWindow(item,profile).goldenEnd ? 'golden' : 'overbaked')).join('')}</div><small data-bake-order="${item.id}">${escapeHtml(customerName(item))} · ${Math.round(item.bakeTime)}s</small></div>` : '<span>Empty shelf</span>'}</div>`;
+    return `<div class="oven-slot ${item ? 'baking' : ''}">${item ? `<div><div class="bake-pastries">${Array.from({length:item.quantity},()=>pastry(item,'golden')).join('')}</div><small data-bake-order="${item.id}">${escapeHtml(customerName(item))} · ${item.bakeTime.toFixed(1)}s</small></div>` : '<span>Empty shelf</span>'}</div>`;
   }).join('');
-  return stationShell('Oven', 'Warm, watchful, and wonderfully fragrant', `<div class="oven-unit"><div class="oven-workspace"><div class="oven-illustration">${suppliedTool('oven', 'Grandma’s original oven drawing')}</div><div class="oven-shelf">${slotsHtml}</div></div>
-    <div class="oven-controls"><div><div class="bake-band" aria-label="Baking progress"><span style="--bake:${pct(bakeRatio)}"></span></div><small class="bake-status">${order?.stage === 'baking' ? qualityLabel : 'The golden band is generous.'}</small></div><span class="timer-display" aria-label="Live bake timer">${order?.stage === 'baking' ? `${Math.round(order.bakeTime)}s` : '—'}</span></div>
-    <div class="button-row" style="margin-top:1rem">${selectedCanBake ? `<button class="btn" data-game="start-bake" ${baking.length >= slots ? 'disabled' : ''}>Put tray in oven</button>` : ''}${order?.stage === 'baking' ? '<button class="btn" data-game="remove-bake">Remove selected tray</button>' : ''}${order?.stage === 'baked' ? '<button class="btn secondary" data-station="decorating">Decorate this batch</button>' : ''}${!order ? '<span class="muted">Select a ticket to check its tray.</span>' : ''}</div>
-  </div>`);
+  return stationShell('Oven','Slide it in. Watch for golden.',`<div class="oven-unit"><div class="oven-workspace"><div class="oven-playground"><div class="oven-illustration">${suppliedTool('oven','Grandma’s original oven drawing')}<button id="oven-drop" class="oven-door-target" ${selectedCanBake && baking.length < session.ovenSlots ? 'data-game="start-bake"' : 'disabled'} aria-label="Load selected tray into oven">${baking.length ? `<span class="oven-inserted">${pastry(baking[0],'raw')}</span>` : '<span>drop tray here</span>'}</button></div>${selectedCanBake ? `<button id="oven-tray" class="tray-handle" aria-label="Drag tray into oven">${ovenTray(order)}<span>drag me into the oven</span></button>` : ''}</div><div class="oven-shelf">${slotsHtml}</div></div><div class="oven-controls"><div><div class="bake-band" aria-label="Baking progress" style="--golden-start:${window.goldenStart/max*100}%;--golden-end:${window.goldenEnd/max*100}%"><span style="--bake:${pct(selectedBake ? order.bakeTime/max : 0)}"></span></div><small class="bake-status">${qualityLabel}</small></div><span class="timer-display" aria-label="Live bake countdown">${selectedBake ? `${Math.max(0,window.goldenStart-order.bakeTime).toFixed(1)}s` : `${window.goldenStart}s`}</span></div><div class="button-row" style="margin-top:1rem">${selectedCanBake ? `<button class="btn secondary" data-game="start-bake" ${baking.length >= session.ovenSlots ? 'disabled' : ''}>Load tray without dragging</button>` : ''}${selectedBake ? '<button class="btn" data-game="remove-bake">Take out the tray</button>' : ''}${order?.stage === 'baked' ? '<button class="btn secondary" data-station="decorating">Ice this batch</button>' : ''}${!order ? '<span class="muted">Select a ticket to check its tray.</span>' : ''}</div></div>`);
 }
 
 function renderDecorating() {
   const order = selectedOrder();
-  if (!order) return stationShell('Decorating', 'A sweet finishing touch', emptyStation());
-  if (!['baked', 'decorating', 'ready'].includes(order.stage)) return stationShell('Decorating', 'A sweet finishing touch', `<div class="task-card">${emptyStation(`Bake ${customerName(order)}’s pastry first.`)}</div>`);
-  const isCupcake = order.family === 'cupcake';
-  const frostings = RECIPES[order.family].frostings || [];
-  const topping = isCupcake ? order.topping : null;
-  const decor = order.decoration;
-  return stationShell('Decorating', `${cap(order.family)} finishing bench`, `<div class="task-card"><div class="decorate-workspace"><div class="decor-options">
-    ${isCupcake ? `<strong>Frosting</strong>${frostings.map((f, i) => `<button class="choice-button ${decor.frosting === f ? 'active' : ''}" data-frosting="${f}"><span class="frosting-swatch" style="--shade:${['#fff','#999','#222'][i % 3]}"></span>${cap(f)}</button>`).join('')}` : '<span class="pill">No frosting needed</span>'}
-    ${topping ? `<button class="choice-button ${decor.toppings?.includes(topping) ? 'active' : ''}" data-topping="${topping}">${ingredientIcon(topping)} Add ${cap(topping)}</button>` : '<span class="muted">No topping requested.</span>'}
-    <button class="choice-button" data-game="decorate">Pipe a little</button><button class="btn secondary" data-game="finish-decoration">Finish pastry</button>
-  </div><div class="decoration-bench"><div class="decor-pastry">${pastry(order, 'golden')}</div>${isCupcake ? `<p class="decor-progress">${Math.round((decor.coverage || 0)*100)}% piped · ${decor.sprinkles || 0} sprinkles</p><div id="decor-canvas" class="decor-canvas" aria-label="Frosting practice guide. Tap or drag inside the guide."><div class="piping-target"></div>${isCupcake ? '<div class="pipe-guide"></div>' : ''}${Array.from({length:Math.round((decor.coverage || 0)*12)},(_,i)=>`<i class="frosting-mark" style="left:${40 + (i%4)*7}%;top:${39 + Math.floor(i/4)*8}%;--frosting:${decor.frosting === 'strawberry' ? '#d4d4d4' : decor.frosting === 'chocolate' ? '#777' : '#fff'}"></i>`).join('')}${Array.from({length:decor.sprinkles || 0},(_,i)=>`<i class="sprinkle-mark" style="left:${36+(i*17)%32}%;top:${36+(i*23)%34}%;--rotate:${(i*37)%150}deg;--sprinkle:${['#191919','#777','#444','#aaa'][i%4]}"></i>`).join('')}</div>` : ''}</div></div>
-    <p class="muted">${isCupcake ? `Tap or drag inside the guide to pipe a forgiving swirl${topping ? `, then add ${cap(topping).toLowerCase()}` : ''}.` : 'Give the baked pastry a quick finishing check, then mark it ready.'}</p>
-  </div>`);
+  if (!order) return stationShell('Decorating','Your own finishing touch',emptyStation());
+  if (!['baked','decorating','ready'].includes(order.stage)) return stationShell('Decorating','Your own finishing touch',emptyStation('Bake the pastry before icing.'));
+  const decor = order.decoration, canPipe = order.family !== 'muffin';
+  const frostings = RECIPES[order.family].frostings;
+  const area = pastryArea(order.family);
+  const color = decor.frosting === 'strawberry' ? '#efd5d8' : decor.frosting === 'chocolate' ? '#cdb8a5' : '#fffaf0';
+  const path = icingPath(decor.points);
+  const topping = order.family === 'cupcake' ? order.topping : null;
+  return stationShell('Decorating',`${cap(order.family)} for ${customerName(order)}`,`<div class="task-card"><div class="decorate-workspace"><div class="decor-options">${canPipe ? `<strong>${order.family === 'cookie' ? 'Vanilla icing · optional' : 'Choose the frosting'}</strong>${frostings.map(f=>`<button class="choice-button ${decor.frosting === f ? 'active' : ''}" data-frosting="${f}">${cap(f)} ${order.family === 'cookie' ? 'icing' : 'frosting'}</button>`).join('')}<button class="choice-button" data-game="decorate">Pipe a little without dragging</button>` : '<span class="pill">No icing needed</span>'}${topping ? `<button class="choice-button ${decor.toppings.includes(topping) ? 'active' : ''}" data-topping="${topping}">${ingredientIcon(topping)} Add ${cap(topping)}</button>` : ''}<button class="btn secondary" data-game="finish-decoration">Finish pastry</button></div><div class="decoration-bench"><div id="decor-canvas" class="decor-canvas ${canPipe ? 'can-pipe' : ''}" role="group" aria-label="${canPipe ? 'Drag icing directly over the pastry' : 'Baked muffin'}"><div class="decor-pastry">${pastry(order,'golden')}</div>${canPipe ? `<svg class="icing-layer" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="icing-bounds"><ellipse cx="${area.x*100}" cy="${area.y*100}" rx="${area.rx*100}" ry="${area.ry*100}"/></clipPath></defs><g clip-path="url(#icing-bounds)"><ellipse class="piping-guide ${decor.coverage > 0 ? 'has-icing' : ''}" cx="${area.x*100}" cy="${area.y*100}" rx="${area.rx*70}" ry="${area.ry*70}" fill="none" stroke="#aaa" stroke-width=".5" stroke-dasharray="1.5 2"/><path data-icing-path d="${path}" fill="none" stroke="#80786c" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path data-icing-path d="${path}" fill="none" stroke="${color}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>${Array.from({length:decor.sprinkles},(_,i)=>`<path d="M${35+(i*17)%30} ${order.family === 'cupcake' ? 15+(i*13)%26 : 30+(i*13)%40}l1.5 2" stroke="${i%2 ? '#bba4a0' : '#333'}" stroke-width="1"/>`).join('')}</g></svg><span class="piping-tool" aria-hidden="true">${suppliedTool('piping')}</span>` : ''}</div>${canPipe ? `<div class="preparation-meter" data-decor-meter role="progressbar" aria-label="Icing coverage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(decor.coverage*100)}" style="--progress:${decor.coverage}"><span></span></div><p class="preparation-readout" data-decor-text>${Math.round(decor.coverage*100)}% iced</p>` : ''}</div></div><p class="muted">${canPipe ? 'Press and drag across the pastry to squeeze out icing. Lift your finger to start a new stroke.' : 'Give the muffin a finishing check, then mark it ready.'}</p></div>`);
 }
 
 function renderDrinks() {
   const order = selectedOrder();
-  if (!order) return stationShell('Drinks', 'A warm cup for the road', emptyStation());
+  if (!order) return stationShell('Drinks','A warm cup for the road',emptyStation());
   const prep = order.drinkPrep;
-  const requested = DRINKS.find(d => d.id === order.drink.type);
-  const selected = DRINKS.find(d => d.id === prep.type);
-  return stationShell('Drinks', `${cap(order.drink.type)} for ${customerName(order)}`, `<div class="task-card"><div class="drink-workspace"><div class="cup-stage ${prep.fill > 0 && prep.fill < DRINK_FILL_TARGET ? 'filling' : ''}">${cup(prep)}${prep.fill >= .75 ? '<div class="steam-lines"><i style="--x:25px"></i><i style="--x:60px;animation-delay:.7s"></i></div>' : ''}</div><div class="drink-controls">
-    <p class="recipe-strip"><span class="recipe-chip">Requested: ${cap(order.drink.variety)} ${cap(order.drink.type)}</span>${order.drink.extras.map(e => `<span class="recipe-chip">+ ${cap(e)}</span>`).join('')}${order.takeaway ? '<span class="recipe-chip">+ lid</span>' : ''}</p>
-    ${!prep.cup ? '<button class="btn" data-game="select-cup">Choose a cup</button>' : `<div><strong>Choose the drink</strong><div class="choice-grid">${DRINKS.map(drink => drink.varieties.map(v => `<button class="choice-button ${prep.type === drink.id && prep.variety === v ? 'active' : ''}" data-drink="${drink.id}" data-variety="${v}">${cap(v)} ${cap(drink.id)}</button>`).join('')).join('')}</div></div>`}
-    ${prep.type ? `<div class="fill-gauge"><button id="drink-hold" class="hold-button" style="--hold:${pct(prep.fill / DRINK_FILL_TARGET)}"><span>Hold to pour · ${Math.round(prep.fill * 100)}%</span></button><span>Line ${Math.round(DRINK_FILL_TARGET*100)}%</span></div>` : ''}
-    ${selected ? `<div><strong>Add extras</strong><div class="button-row">${selected.extras.map(extra => `<button class="choice-button ${prep.extras?.includes(extra) ? 'active' : ''}" data-drink-extra="${extra}">+ ${cap(extra)}</button>`).join('')}${order.takeaway ? `<button class="choice-button ${prep.lid ? 'active' : ''}" data-game="drink-lid">${prep.lid ? '✓ ' : ''}Takeaway lid</button>` : ''}</div></div>` : ''}
-    ${prep.type ? '<button class="btn secondary" data-game="finish-drink">Finish drink</button>' : ''}
-    ${prep.finished ? '<p class="pill">Drink ready</p>' : ''}
-    <button class="btn ghost small" data-remake="drink">Start drink again · 1 coin</button>
-  </div></div></div>`);
+  const selected = DRINKS.find(d=>d.id === prep.type);
+  return stationShell('Drinks',`${cap(order.drink.type)} for ${customerName(order)}`,`<div class="task-card"><div class="drink-workspace"><div class="pour-scene ${prep.finished ? 'drink-finished' : ''} ${prep.fill >= .75 && prep.fill <= .85 ? 'at-fill-line' : ''}">${prep.type && !prep.finished ? `<button class="pour-tool" aria-label="Pull kettle down to pour. Release to stop.">${suppliedTool('kettle')}</button><span class="pour-stream" aria-hidden="true"></span>` : ''}<div class="live-cup">${liveCup(prep)}</div>${prep.type ? `<p class="pour-hint">${prep.finished ? 'a lovely cup, ready to go' : 'pull the kettle down to pour'}</p>` : ''}</div><div class="drink-controls"><p class="recipe-strip"><span class="recipe-chip">Requested: ${cap(order.drink.variety)} ${cap(order.drink.type)}</span>${order.drink.extras.map(e=>`<span class="recipe-chip">+ ${cap(e)}</span>`).join('')}${order.takeaway ? '<span class="recipe-chip">+ lid</span>' : ''}</p>${!prep.cup ? '<button class="btn" data-game="select-cup">Choose a cup</button>' : `<div><strong>Choose the drink</strong><div class="choice-grid">${DRINKS.map(drink=>drink.varieties.map(v=>`<button class="choice-button ${prep.type === drink.id && prep.variety === v ? 'active' : ''}" data-drink="${drink.id}" data-variety="${v}">${cap(v)} ${cap(drink.id)}</button>`).join('')).join('')}</div></div>`}${prep.type ? `<div class="fill-gauge"><div class="preparation-meter" data-drink-meter role="progressbar" aria-label="Drink fill" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(prep.fill/DRINK_FILL_TARGET*100)}" style="--progress:${Math.min(1,prep.fill/DRINK_FILL_TARGET)}"><span></span></div><p class="preparation-readout" data-drink-text>${Math.round(prep.fill*100)}% full · stop at 80%</p>${!prep.finished ? '<button id="drink-hold" class="btn secondary">Hold to pour instead</button>' : ''}</div>` : ''}${selected ? `<div><strong>Drag or tap extras into the cup</strong><div class="button-row">${selected.extras.map(extra=>`<button class="choice-button ${prep.extras.includes(extra) ? 'active' : ''}" data-drink-extra="${extra}" ${prep.finished || prep.extras.includes(extra) ? 'disabled' : ''}>${ingredientIcon(extra)} ${cap(extra)}</button>`).join('')}${order.takeaway ? `<button class="choice-button ${prep.lid ? 'active' : ''}" data-game="drink-lid" ${prep.finished ? 'disabled' : ''}>${prep.lid ? 'Lid added' : 'Add takeaway lid'}</button>` : ''}</div></div>` : ''}${prep.type && !prep.finished ? '<button class="btn secondary" data-game="finish-drink">Finish drink</button>' : ''}${prep.finished ? '<p class="pill">Drink ready</p>' : ''}<button class="btn ghost small" data-remake="drink">Start drink again · 1 coin</button></div></div></div>`);
 }
 
 function renderStation() {
@@ -330,8 +321,7 @@ function renderGame() {
     <div class="game-layout"><div class="play-column"><div class="station-area">${renderStation()}</div>${stationNav()}</div>${ticketPanel()}</div>
     ${tutorialStep >= 0 ? tutorialModal() : ''}${settingsOpen ? pauseModal() : ''}
   </main>`;
-  bindHoldControls();
-  bindDecorCanvas();
+  workstations = bindWorkstations({root:app,context:()=>({order:selectedOrder(),paused:!session || session.paused || tutorialStep >= 0 || document.hidden}),action:action=>dispatch(session,profile,action),commit:(needsRender)=>{saveGame(profile,session);if(needsRender)render();},feedback:(message,name)=>{if(message)showToast(message);if(name)sound(name);}});
 }
 
 function stationNav() {
@@ -414,7 +404,7 @@ function doAction(type, payload = {}) {
 }
 
 function render() {
-  if (heldTimer) { clearInterval(heldTimer); heldTimer = 0; }
+  workstations?.dispose(); workstations = null;
   const hadDialog = !!app.querySelector('[aria-modal="true"]');
   const focus = document.activeElement;
   const focusId = focus?.id;
@@ -447,77 +437,20 @@ function refreshLiveIndicators() {
   const order = selectedOrder();
   document.querySelectorAll('[data-bake-order]').forEach(el => {
     const item = activeOrders().find(o=>o.id === el.dataset.bakeOrder);
-    if (item) el.textContent = `${customerName(item)} · ${Math.round(item.bakeTime)}s`;
+    if (item) el.textContent = `${customerName(item)} · ${item.bakeTime.toFixed(1)}s`;
   });
   if (station === 'oven' && order?.stage === 'baking') {
     const window = getBakeWindow(order, profile);
-    const max = Math.max(window.goldenEnd + 7, 25);
+    const max = window.goldenEnd + 4;
     const needle = document.querySelector('.bake-band span');
     const clock = document.querySelector('.timer-display');
-    if (needle) needle.style.setProperty('--bake', pct(Math.min(1, order.bakeTime / max)));
-    if (clock) clock.textContent = `${Math.round(order.bakeTime)}s`;
+    if (needle) needle.style.setProperty('--bake', `${Math.min(100,order.bakeTime / max * 100).toFixed(3)}%`);
+    if (clock) clock.textContent = `${Math.max(0,window.goldenStart-order.bakeTime).toFixed(1)}s`;
     const status = document.querySelector('.bake-status');
-    if (status) status.textContent = order.bakeTime < window.goldenStart ? `Golden in ${Math.ceil(window.goldenStart-order.bakeTime)}s` : order.bakeTime <= window.goldenEnd ? 'Golden — take it out!' : 'Overbaked — you can remake it';
+    if (status) status.textContent = order.bakeTime < window.goldenStart ? `Golden in ${(window.goldenStart-order.bakeTime).toFixed(1)}s` : order.bakeTime <= window.goldenEnd ? 'Golden — take it out!' : 'Overbaked — you can remake it';
   }
 }
 
-function bindHoldControls() {
-  const bind = (id, action, amount, soundName) => {
-    const el = document.querySelector(id);
-    if (!el) return;
-    let active = false;
-    const expectedStage = action === 'mix' ? 'mixing' : null;
-    const step = () => {
-      const result = dispatch(session, profile, { type: action, amount });
-      if (soundName) sound(soundName);
-      saveGame(profile, session);
-      const order = selectedOrder();
-      if (action === 'mix') {
-        el.style.setProperty('--hold', pct(order?.mixProgress || 0));
-        el.querySelector('span').textContent = `${Math.round((order?.mixProgress || 0) * 100)}% mixed`;
-        document.querySelector('.bowl-wrap')?.classList.add('mixing');
-      } else {
-        el.style.setProperty('--hold', pct((order?.drinkPrep?.fill || 0) / DRINK_FILL_TARGET));
-        el.querySelector('span').textContent = `Hold to pour · ${Math.round((order?.drinkPrep?.fill || 0) * 100)}%`;
-        const cupSvg = document.querySelector('.cup-stage svg');
-        if (cupSvg && order) cupSvg.outerHTML = cup(order.drinkPrep);
-      }
-      if (!result?.ok || (expectedStage && order?.stage !== expectedStage)) { stop(); render(); }
-    };
-    const stop = () => { if (!active) return; active = false; clearInterval(heldTimer); heldTimer = 0; saveGame(profile, session); render(); };
-    const start = event => { if (active) return; event.preventDefault(); active = true; step(); if (active) heldTimer = setInterval(step, 180); window.addEventListener('pointerup', stop, { once: true }); window.addEventListener('pointercancel', stop, { once: true }); };
-    el.addEventListener('pointerdown', start);
-    el.addEventListener('click', event => { if (event.detail === 0) { event.preventDefault(); step(); } });
-    el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); step(); } });
-  };
-  bind('#mix-hold', 'mix', .14, 'mix');
-  bind('#drink-hold', 'fill-drink', .03, 'pour');
-}
-
-function bindDecorCanvas() {
-  const canvas = document.querySelector('#decor-canvas');
-  if (!canvas) return;
-  let drawing = false;
-  const draw = e => {
-    if (!drawing && e.type !== 'click') return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    const pastryRect = canvas.querySelector('.piping-target').getBoundingClientRect();
-    if (e.clientX < pastryRect.left || e.clientX > pastryRect.right || e.clientY < pastryRect.top || e.clientY > pastryRect.bottom) return;
-    const order = selectedOrder();
-    if (order?.decoration.toppings.includes('sprinkles')) dispatch(session,profile,{type:'topping',topping:'sprinkles',x,y});
-    const result = dispatch(session, profile, { type: 'decorate', amount: .08, x, y });
-    if (!result.ok || canvas.querySelectorAll('.frosting-mark').length >= 24) return;
-    const mark = document.createElement('i');
-    mark.className = 'frosting-mark'; mark.style.left = `${x*100}%`; mark.style.top = `${y*100}%`;
-    canvas.append(mark);
-  };
-  canvas.addEventListener('pointerdown', e => { drawing = true; canvas.setPointerCapture(e.pointerId); draw(e); });
-  canvas.addEventListener('pointermove', draw);
-  canvas.addEventListener('pointerup', () => { drawing = false; saveGame(profile, session); render(); });
-  canvas.addEventListener('pointercancel', () => { drawing = false; saveGame(profile,session); render(); });
-}
 
 function sound(name) {
   if (!profile.settings?.sound) return;
@@ -599,8 +532,9 @@ app.addEventListener('change', event => {
 document.addEventListener('visibilitychange', () => {
   document.documentElement.classList.toggle('game-paused', document.hidden || settingsOpen);
   if (!session || session.phase !== 'playing') return;
+  if (document.hidden) { workstations?.dispose(); workstations = null; }
   if (document.hidden) dispatch(session, profile, { type: 'pause' });
-  else if (!settingsOpen) { dispatch(session, profile, { type: 'resume' }); lastTick = performance.now(); }
+  else if (!settingsOpen) { dispatch(session, profile, { type: 'resume' }); lastTick = performance.now(); render(); }
   saveGame(profile, session);
 });
 
@@ -624,21 +558,20 @@ window.addEventListener('keydown', event => {
   }
 });
 
-setInterval(() => {
-  if (!session || screen !== 'game' || session.phase !== 'playing' || session.paused || tutorialStep >= 0) { lastTick = performance.now(); return; }
-  const now = performance.now(); const delta = Math.min(1, (now - lastTick) / 1000); lastTick = now;
-  const beforePhase = session.phase;
-  const beforeShape = `${session.queue?.length || 0}:${session.orders?.length || 0}`;
-  const beforeAlerts = activeOrders().filter(o => o.stage === 'baking' && o.bakeTime >= getBakeWindow(o, profile).goldenStart).length;
-  const beforeBakeStates = activeOrders().filter(o => o.stage === 'baking').map(o => `${o.id}:${o.bakeState}`).join('|');
-  tick(session, profile, delta);
-  const afterAlerts = activeOrders().filter(o => o.stage === 'baking' && o.bakeTime >= getBakeWindow(o, profile).goldenStart).length;
-  const afterBakeStates = activeOrders().filter(o => o.stage === 'baking').map(o => `${o.id}:${o.bakeState}`).join('|');
+function gameFrame(now) {
+  requestAnimationFrame(gameFrame);
+  if (!session || screen !== 'game' || session.phase !== 'playing' || session.paused || tutorialStep >= 0) { lastTick = now; return; }
+  const delta = Math.min(.1,(now-lastTick)/1000); lastTick = now;
+  const beforeAlerts = activeOrders().filter(o=>o.stage === 'baking' && o.bakeTime >= getBakeWindow(o,profile).goldenStart).length;
+  const beforeStates = activeOrders().map(o=>`${o.id}:${o.bakeState}`).join('|');
+  tick(session,profile,delta);
+  const afterAlerts = activeOrders().filter(o=>o.stage === 'baking' && o.bakeTime >= getBakeWindow(o,profile).goldenStart).length;
+  const afterStates = activeOrders().map(o=>`${o.id}:${o.bakeState}`).join('|');
   if (afterAlerts > beforeAlerts) sound('ding');
-  saveGame(profile, session);
-  const afterShape = `${session.queue?.length || 0}:${session.orders?.length || 0}`;
-  if (beforePhase !== session.phase || beforeShape !== afterShape || beforeAlerts !== afterAlerts || beforeBakeStates !== afterBakeStates) render();
+  if (beforeAlerts !== afterAlerts || beforeStates !== afterStates) liveRenderPending = true;
+  if (liveRenderPending && !workstations?.active) { liveRenderPending = false; render(); }
   else refreshLiveIndicators();
-}, 1000);
-
+  if (now-lastSave > 1000) { saveGame(profile,session); lastSave = now; }
+}
+requestAnimationFrame(gameFrame);
 render();

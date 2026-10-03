@@ -17,22 +17,22 @@ export const RECIPES = {
   cookie: {
     id: 'cookie', name: 'Grandma’s cookies', singular: 'cookie',
     ingredients: ['flour', 'sugar', 'butter', 'egg'], flavors: ['plain', 'chocolate'],
-    toppings: ['chocolate-chips', 'raisins'], frostings: [],
-    bake: { goldenStart: 12, goldenEnd: 21 }, price: 6, cost: 2, unlockDay: 1,
+    toppings: ['chocolate-chips', 'raisins'], frostings: ['vanilla'],
+    bake: { goldenStart: 7, goldenEnd: 16 }, price: 6, cost: 2, unlockDay: 1,
     description: 'Crisp edges, a soft middle, and a little love in every batch.',
   },
   muffin: {
     id: 'muffin', name: 'Morning muffins', singular: 'muffin',
     ingredients: ['flour', 'sugar', 'butter', 'egg', 'milk'], flavors: ['vanilla', 'chocolate'],
     toppings: ['blueberries', 'chocolate-chips'], frostings: [],
-    bake: { goldenStart: 14, goldenEnd: 23 }, price: 7, cost: 3, unlockDay: 2,
+    bake: { goldenStart: 8, goldenEnd: 17 }, price: 7, cost: 3, unlockDay: 2,
     description: 'A tender, golden little reason to slow down with a warm drink.',
   },
   cupcake: {
     id: 'cupcake', name: 'Celebration cupcakes', singular: 'cupcake',
     ingredients: ['flour', 'sugar', 'butter', 'egg', 'milk'], flavors: ['vanilla', 'chocolate'],
     toppings: ['sprinkles'], frostings: ['vanilla', 'chocolate', 'strawberry'],
-    bake: { goldenStart: 13, goldenEnd: 22 }, price: 8, cost: 3, unlockDay: 3,
+    bake: { goldenStart: 7.5, goldenEnd: 16.5 }, price: 8, cost: 3, unlockDay: 3,
     description: 'A soft cake, a generous swirl, and a tiny everyday celebration.',
   },
 };
@@ -72,9 +72,9 @@ export const UPGRADES = [
 export const DAY_TITLES = ['A little helping hand', 'Familiar faces', 'A swirl of something new', 'The word gets around', 'The neighborhood tea party'];
 export const TUTORIAL = [
   { station: 'counter', title: 'Every good visit starts with hello', text: 'Take a ticket at the counter. Its recipe stays with you at every station.' },
-  { station: 'mixing', title: 'A little of this, a little of that', text: 'Add the recipe ingredients, hold to mix, then tap each marked tray position.' },
-  { station: 'oven', title: 'Watch for golden', text: 'Put your tray in the oven. Make the drink while it bakes, then remove it in the golden window.' },
-  { station: 'decorating', title: 'Your finishing touch', text: 'Follow the swirl with taps or a gentle drag. Choose the requested frosting and toppings.' },
-  { station: 'drinks', title: 'Something warm to go with it', text: 'Choose a cup and drink. Hold to fill to the line, add extras, and use a lid for takeaway.' },
+  { station: 'mixing', title: 'A little of this, a little of that', text: 'Add the recipe ingredients, drag the whisk around inside the bowl, then tap each tray position. Holding the mix button works too.' },
+  { station: 'oven', title: 'Watch for golden', text: 'Drag your tray into the oven, or use the load button. Bakes become golden in seven to eight seconds. Make the drink, then remove the tray while golden.' },
+  { station: 'decorating', title: 'Your finishing touch', text: 'Drag the icing bag directly over the pastry to draw your own swirl. Cookies can have optional vanilla icing. Choose the requested cupcake frosting and toppings.' },
+  { station: 'drinks', title: 'Something warm to go with it', text: 'Choose a cup and drink. Pull the kettle down to pour, then release at the eighty-percent line. Drag or tap extras into the cup and add a lid for takeaway.' },
   { station: 'counter', title: 'Send a little happiness home', text: 'Match the pastry and drink on the ticket, choose a box or tray, and serve. Mistakes are always fixable.' },
 ];
