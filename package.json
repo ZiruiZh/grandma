@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "An original, asset-free bakery management game",
+  "description": "An original bakery management game with owner-supplied artwork",
   "scripts": {
     "dev": "node server.mjs",
     "start": "node server.mjs",

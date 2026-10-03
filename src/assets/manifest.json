@@ -205,14 +205,14 @@
   },
   "customer-sheet": {
     "file": "customer-sheet.png",
-    "width": 596,
-    "height": 770,
+    "width": 3200,
+    "height": 2000,
     "bounds": [
-      0,
-      0,
-      596,
-      770
+      136,
+      135,
+      3038,
+      1908
     ],
-    "source": "Direct capture of supplied Goodnotes page"
+    "source": "customersandgrandma.png"
   }
 }

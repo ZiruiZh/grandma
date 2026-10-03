@@ -27,4 +27,4 @@ Existing recipe, customer, scoring, progression, and business modules in `src/`;
 
 ## Latest asset direction
 
-The user supplied 17 original transparent PNGs and a Goodnotes character-sheet reference, explicitly superseding the initial zero-image restriction for these files. Keep their original appearance. Use static original character crops; remove redrawn characters, additional shading, 3D treatment and character animations. The core game remains interactive with explicit preparation progress.
+The user supplied 18 original transparent PNGs, including the Grandma and customer sheet, explicitly superseding the initial zero-image restriction for these files. Keep their original appearance. Use static original character crops; remove redrawn characters, additional shading, 3D treatment and character animations. The core game remains interactive with explicit preparation progress.

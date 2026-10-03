@@ -149,6 +149,7 @@ p { margin-bottom:16px; }
 .customer-figure svg { width:100%; }
 .customer-figure.enter { animation:customerEnter .5s cubic-bezier(.16,1,.3,1) both; }
 .original-character { overflow:hidden; }
+.sheet-crop { overflow:hidden!important; }
 .pantry-artbook { margin:28px 0 8px; border-top:1px solid var(--line); }
 .pantry-artbook summary { display:flex; align-items:center; min-height:48px; padding:12px 0; cursor:pointer; }
 .pantry-artbook summary::after { content:'+'; margin-left:auto; font-size:20px; }
@@ -188,6 +189,10 @@ p { margin-bottom:16px; }
 .portion-target.filled { border:0; animation:plop .22s ease-out; }
 .portion-target svg { width:100%; height:100%; }
 .oven-unit { padding:17px; border:2.5px solid var(--ink); border-radius:15px 10px 13px 9px; }
+.oven-unit { padding:0; border:0; border-radius:0; }
+.oven-workspace { display:grid; gap:24px; }
+.oven-illustration { width:160px; margin:0 auto; }
+.oven-illustration svg { width:100%; }
 .oven-window { min-height:170px; padding:22px; border:2px solid var(--ink); border-radius:8px 11px 7px 12px; background:white; }
 .oven-window.hot { background:#fafafa; }
 .oven-shelf { display:grid; gap:14px; }
@@ -212,6 +217,10 @@ p { margin-bottom:16px; }
 .frosting-swatch { width:15px; height:15px; border:1.5px solid var(--ink); border-radius:50%; background:var(--shade); }
 .decor-canvas { position:relative; display:grid; place-items:center; height:260px; background:none; overflow:hidden; touch-action:none; }
 .decor-pastry { width:190px; }
+.decoration-bench { display:grid; justify-items:center; }
+.decoration-bench .decor-canvas { width:220px; height:140px; margin:10px 0; }
+.piping-target { width:150px; height:100px; }
+.decor-progress { font-size:12px; color:var(--grey); margin-top:18px; }
 .pipe-guide { position:absolute; width:103px; height:82px; border:2px dotted #aaa; border-radius:50%; pointer-events:none; }
 .frosting-mark { position:absolute; width:15px; height:15px; border-radius:50%; background:var(--frosting,#fff); border:1px solid var(--ink); transform:translate(-50%,-50%); pointer-events:none; }
 .sprinkle-mark { position:absolute; width:3px; height:9px; background:var(--sprinkle,var(--ink)); transform:translate(-50%,-50%) rotate(var(--rotate)); pointer-events:none; }
@@ -450,3 +459,5 @@ p { margin-bottom:16px; }
 /* Supplied drawings are static and unfiltered. Gameplay feedback stays in controls. */
 .original-character,.supplied-art { animation:none!important; filter:none; }
 .hero-profile,.customer-figure,.service-moment,.pastry { animation:none!important; transform:none; }
+.ingredient-btn:hover svg,.portion-target.filled,.ticket.new { animation:none; transform:none; }
+@media (min-width:700px) { .oven-workspace { grid-template-columns:180px 1fr; align-items:center; gap:45px; } .oven-illustration { width:180px; } }

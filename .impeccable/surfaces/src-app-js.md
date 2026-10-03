@@ -2,33 +2,37 @@
 version: 1
 slug: "src-app-js"
 primary_target: "src/app.js"
-related_targets: ["src/art.js","src/styles.css","ASSET_MANIFEST.md"]
+related_targets: ["src/art.js","src/supplied-assets.js","src/styles.css","ASSET_MANIFEST.md"]
 ---
 
 # Welcome and bakery game
 
 ## Scope and visitor mode
 
-The welcome surface is Persuade: a first-time visitor chooses a short baking break or Grandma's five-day story. The station, ticket, recipe, results, and settings surfaces are Operate: play remains clear and recoverable. These modes belong to these surfaces rather than to the whole brand.
+Welcome is Persuade: choose a short baking break or Grandma’s five-day story. Stations, tickets, recipes, results, and settings are Operate: tasks stay clear and recoverable.
 
 ## Audience, job, and action
 
-A visitor on a phone, tablet, or desktop should understand that Grandma needs a little help, choose Quick Play or Story Mode, and begin without an account. Returning visitors can continue their story. During play, the next task, selected ticket, and oven attention must remain visible or immediately reachable.
+Phone, tablet, and desktop visitors should understand Grandma needs a little help and start Quick Play or Story Mode without an account. Returning visitors continue their story. The selected ticket, next task, and oven attention remain visible or immediately reachable.
 
 ## Chosen direction and memorable moment
 
-The binding visual authority is https://www.heytea.com/. The built expression uses original profile mascots, loose black bakery drawings, original lowercase stroke lettering, small widely spaced regular navigation, and extensive open white space. The memorable welcome moment is Grandma holding a small bowl beside the words “good bakes / by grandma,” with her recipe book, flyers, and cup of tea nearby.
+HEYTEA supplies the spatial authority: open white space, restrained regular navigation, and generous gaps. The supplied PNGs, including the exact uploaded transparent character sheet, supply the artwork authority. The final user direction is to preserve the original assets; possible redrawn or 3D character treatments were rejected. The welcome’s familiar moment is the original Grandma beside “good bakes / by grandma,” a recipe book, flyers, an original cup, and a croissant.
 
 ## First viewport and page sequence
 
-On phones, a small Grandma mark faces recipe-book and share controls; the icon-only share action retains a complete touch target. The stroke heading sits left, followed by a right-aligned Grandma vignette; Quick Play and Story Mode sit as two open arrow actions below. No boxed feature grid interrupts this sequence. The exact supplied introduction follows with a small portrait, then today's recipe, scrapbook access, optional configured business links, and a restrained footer.
+Phone welcome has a small original Grandma portrait opposite recipe-book/share controls, a left-aligned stroke heading, and the right-aligned vignette. Quick Play and Story Mode are open arrow actions below. The exact supplied introduction follows, then today’s recipe, scrapbook, optional configured business links, and a quiet footer. The share icon retains a full touch target.
 
-Tablet puts heading and vignette beside each other. Desktop introduces a large open-outline Grandma profile at left, the two-line heading in the middle, and the recipe/tea vignette at right; the two game actions remain centered underneath. This composition is welcome-specific.
+Tablet places heading and vignette side by side. Desktop places the static original Grandma at left, the heading in the middle, and the vignette at right, with centered mode actions underneath. This composition belongs to the welcome.
 
 ## Play surfaces and proof
 
-The five stations preserve their complete tasks. A single original drawing anchors each work area: customer profile, bowl and whisk, oven and pastry, decoration canvas, or filled cup. Phone tickets use a persistent compact drawer control; larger layouts expose a horizontal rail and then a desktop side rail. Progress, elapsed time, ingredients, and stage are supported by words and numerical feedback, fine rules, and explicit checks. Short landscape viewports use the compact drawer and fixed bottom station actions even at tablet or desktop widths. Results continue as a plain white receipt with drawings and light separators, with status below the heading. Focus sheets lead directly with their heading and supporting content, keep keyboard focus inside, and return it on close.
+Counter uses the unchanged customer crops. Mixing uses static supplied bowl and whisk crops with numerical progress. Oven uses the supplied oven drawing beside a pastry shelf and explicit cooking feedback. Decorating keeps the pastry untouched and places frosting practice on a separate guide. Drinks use original cup crops while labels and percentage controls explain fill and extras.
+
+Phone ticket access is a persistent compact drawer. Wider layouts expose a horizontal rail and then a side rail; short landscape returns to the drawer and fixed station actions. Tickets retain original customer and food drawings with readable order text. The scrapbook’s illustrated pantry displays both complete original ingredient and tool sheets. Results use white receipt rows, fine rules, and status below the heading. Dialogs keep keyboard focus inside and return it on close.
 
 ## Constraints and unresolved decisions
 
-Follow DESIGN.md for the built world and ASSET_MANIFEST.md for asset inventory. Keep the mobile-first targets, tap/keyboard alternatives, persistent oven alerts, pause behavior, reduced motion, and full original game functionality. No downloaded imagery, fonts, media, or browser runtime libraries are required. No real bakery logo, address, menu URLs, or offers have been provided; show those only when configured. This documentation captures the currently built character system. The user subsequently supplied a character reference at https://web.goodnotes.com/s/KZueLXvo4sQtevPaXoKPfs#page-1 and requested its Grandma/customer designs, with possible 3D appearance or animation. Reference inspection and character-specific updates are the next handoff; this document does not infer its unseen visual details.
+DESIGN.md documents the current built world; ASSET_MANIFEST.md inventories the approved local assets. Eighteen uploaded PNGs remain byte-for-byte unchanged. The user’s exact transparent customersandgrandma.png is bundled as customer-sheet.png at its original dimensions (3200 by 2000). Seven static character regions and the Grandma portrait crop preserve the original faces and transparency. Explicit clip rectangles match the viewports so surrounding figures cannot appear through letterboxing. No redraws, extra image fills, shading, recolors, 3D effects, or character movement are part of this final direction.
+
+Preserve the full original game, explicit preparation progress, pause behavior, tap/keyboard alternatives, focus visibility, and persistent oven alerts. No remote media, downloaded font, or browser runtime library is required. Real business details and offers remain conditional on configuration. No artwork-direction decision remains open in this scope.

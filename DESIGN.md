@@ -1,39 +1,42 @@
 ---
 name: "Grandma’s Bakeria"
-description: "An open white bakery world drawn in original black ink."
+description: "Open white bakery surfaces with the owner’s original drawings preserved."
 colors:
   ink: "#080808"
   paper: "#fff"
   grey: "#666"
   line: "#e6e6e6"
   secondary-rule: "#999"
-  state-light: "#fafafa"
-  state-dark: "#444"
+  meter-track: "#e5e5e5"
+  wait-fill: "#888"
+  bake-light: "#eee"
+  bake-middle: "#aaa"
+  bake-dark: "#444"
+  window-tint: "#fafafa"
+  guide-dark: "#222"
+  guide-chocolate: "#777"
+  guide-strawberry: "#d4d4d4"
+  guide-sprinkle: "#191919"
+  inactive-step: "#ccc"
 typography:
-  title:
+  progress-caption:
     fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
-    fontSize: "23px"
-    fontWeight: 500
-    lineHeight: 1.5
-    letterSpacing: ".025em"
-  headline:
-    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
-    fontSize: "17px"
-    fontWeight: 500
-    lineHeight: 1.5
-    letterSpacing: ".05em"
-  body:
-    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
-    fontSize: "14px"
+    fontSize: "8px"
     fontWeight: 400
     lineHeight: 1.7
-    letterSpacing: ".025em"
-  label:
+    letterSpacing: ".015em"
+  stat-caption:
     fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
-    fontSize: "13px"
-    fontWeight: 500
+    fontSize: "9px"
+    fontWeight: 400
     lineHeight: 1.7
-    letterSpacing: ".065em"
+    letterSpacing: ".035em"
+  micro-label:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "10px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".04em"
   navigation:
     fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
     fontSize: "11px"
@@ -46,10 +49,149 @@ typography:
     fontWeight: 400
     lineHeight: 1.8
     letterSpacing: ".025em"
+  label:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "13px"
+    fontWeight: 500
+    lineHeight: 1.7
+    letterSpacing: ".065em"
+  body:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".025em"
+  empty-title:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "15px"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: ".05em"
+  navigation-desktop:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".13em"
+  headline:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "17px"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: ".05em"
+  receipt:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "19px"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: ".06em"
+  disclosure-symbol:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "20px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".025em"
+  statistic:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "21px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".035em"
+  dialogue-wide:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "22px"
+    fontWeight: 400
+    lineHeight: 1.6
+    letterSpacing: ".03em"
+  title:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "23px"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: ".025em"
+  legacy-reward:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "24px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".025em"
+  statistic-wide:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "25px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".035em"
+  wordmark:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "12px"
+    fontWeight: 500
+    lineHeight: 1.4
+    letterSpacing: ".06em"
+  grandma-quote:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: 1.9
+    letterSpacing: ".045em"
+  hold-label:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".055em"
+  feature-label:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "13px"
+    fontWeight: 500
+    lineHeight: 1.7
+    letterSpacing: ".075em"
+  footer-copy:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "10px"
+    fontWeight: 400
+    lineHeight: 2
+    letterSpacing: ".07em"
+  drawer-label:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "14px"
+    fontWeight: 500
+    lineHeight: 1.7
+    letterSpacing: ".08em"
+  recipe-status:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "10px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: ".02em"
+  dialogue:
+    fontFamily: "'Avenir Next', 'Trebuchet MS', Arial, sans-serif"
+    fontSize: "17px"
+    fontWeight: 400
+    lineHeight: 1.6
+    letterSpacing: ".03em"
 rounded:
   square: "0"
-  hold: "28px 24px 27px 23px"
+  meter: "2px"
   field: "12px"
+  circle: "50%"
+  hold: "28px 24px 27px 23px"
+  tray: "12px 9px 14px 8px"
+  toast: "10px 8px 11px 7px"
+  legacy-oven-shell: "15px 10px 13px 9px"
+  legacy-oven-window: "8px 11px 7px 12px"
+  object-corner-7: "7px"
+  object-corner-8: "8px"
+  object-corner-9: "9px"
+  object-corner-10: "10px"
+  object-corner-11: "11px"
+  object-corner-12: "12px"
+  object-corner-13: "13px"
+  object-corner-14: "14px"
+  object-corner-15: "15px"
+  object-corner-23: "23px"
+  object-corner-24: "24px"
+  object-corner-27: "27px"
+  object-corner-28: "28px"
 spacing:
   tight: "8px"
   small: "12px"
@@ -104,92 +246,96 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.hold}"
     padding: "10px 15px"
+    typography: "{typography.hold-label}"
 ---
 
 # Design System: Grandma’s Bakeria
 
 ## Overview
 
-**Creative North Star: "The White Bakery, Drawn in Ink"**
+**Creative North Star: "The Original Drawing Table"**
 
-This built world follows the user's HEYTEA reference through open white space, small widely spaced navigation, informal stroke lettering, and black profile figures. Grandma’s Bakeria keeps its own characters and bakery drawings. Warmth comes from Grandma's expression, imperfect strokes, and familiar objects: a bowl, recipe book, pastry, flyer stack, and cup of tea.
+This built world combines the user’s HEYTEA reference for open white surfaces, restrained navigation, and generous spacing with the owner’s original bakery drawings. Eighteen uploaded PNGs remain byte-for-byte unchanged, and seven Grandma/customer figures are static clipped viewport crops of the exact transparent character sheet supplied by the user. Their faces, proportions, marks, and transparency remain intact.
 
-Illustration floats directly on the white page. The interface has a light hand: regular or medium local sans text, narrow rules, simple arrows, and grayscale progress. Gameplay keeps the same visual restraint while making the current recipe, ticket, station, and urgent oven state available. The rejected generic bold sans headings and gray card surfaces are outside this world.
+The interface stays quiet around these drawings: original lowercase SVG lettering, small regular or medium local sans text, thin separators, simple actions, and explicit preparation progress. Warmth comes from the supplied drawings and Grandma’s story. The user rejected altered assets, redrawn characters, additional shading, 3D treatment, character animation, generic bold sans headings, and gray card surfaces.
 
 **Key Characteristics:**
 
-- Original reusable vector lettering for display headings.
-- Solid black hair, expressive profile faces, and open outline bodies.
-- Loose line drawings floating in broad white space.
-- Small, spaced, regular navigation and readable local sans controls.
-- Flat white surfaces, fine separators, and explicit monochrome state feedback.
+- Unchanged owner-supplied food, ingredient, tool, cup, and interface drawings.
+- Seven static original character crops with their original faces and transparency.
+- Original reusable SVG stroke lettering for short display headings.
+- Floating artwork, open white surfaces, and small widely spaced regular navigation.
+- Preparation state in words, numerical progress, checks, tickets, and controls.
 
 ## Colors
 
-The palette is paper white and near-black ink, with neutral grays reserved for supporting text, rules, and preparation states. The frontmatter is the normative token layer; the current stylesheet's cream, paper, peach, and soft aliases all resolve to white.
+The interface uses white paper, near-black ink, and neutral gray for supporting text and fine rules. The frontmatter owns the exact values. The cream, paper, peach, and soft stylesheet aliases resolve to white. The supplied character sheet is transparent, so the page shows directly through its unpainted areas.
 
 ### Primary
 
-- **Bakery Ink** (`ink`): text, original lettering, mascot hair and contours, active station marks, selected rules, focus outlines, and filled progress.
+- **Bakery Ink** (ink): text, SVG lettering, active marks, focus outlines, and control progress.
 
 ### Neutral
 
-- **Open Paper** (`paper`): the page, controls, sheets, cups, and unfilled illustration areas.
-- **Quiet Gray** (`grey`): supporting copy, navigation at rest, recipe details, and secondary numerical labels.
-- **Fine Rule** (`line`): ticket dividers, choice rows, station boundaries, and receipt separators.
-- **Secondary Rule** (`secondary-rule`): the lighter underline on secondary actions.
-- **Raw White** (`state-light`): the raw pastry and active oven window's slight tonal shift.
-- **Overbaked Gray** (`state-dark`): the dark end of the baking band and overbaked pastry fill.
+- **Open Paper** (paper): permanent page surfaces and temporary sheets.
+- **Quiet Gray** (grey): supporting copy and inactive navigation.
+- **Fine Rule** (line) and **Secondary Rule** (secondary-rule): separators and supporting action underlines.
+- **Meter Track** (meter-track) and **Patience Fill** (wait-fill): thin progress and patience feedback.
+- **Bake Band** (bake-light, bake-middle, bake-dark): the three explicit cooking ranges in the interface; never an image recolor.
+- **Practice Marks** (guide-dark, guide-chocolate, guide-strawberry, guide-sprinkle): control swatches and separate frosting practice marks.
+- **Inactive Step** (inactive-step): tutorial progress dots.
+- **Window Tint** (window-tint): retained oven-window CSS; the current oven surface uses the supplied oven drawing.
 
-Pastry and drink drawings use additional parameterized neutral fills to distinguish flavor, frosting, liquid, and cooking state. These are illustration data in `src/art.js`, rather than a new accent palette. State remains named in text.
+The original PNG pixels are the authority for artwork color and shading. Preserve their appearance instead of mapping them onto interface tokens. The baking-band gradient is functional state feedback, not a decorative surface treatment.
 
-**The Paper-and-Ink Rule.** Keep large areas white. Use black for identity and action, and neutral gray for subordinate information or visible preparation state.
+**The Original-Pixels Rule.** Preserve supplied artwork exactly. Interface state may change while the food, tools, cups, and characters remain as drawn.
 
 ## Typography
 
-**Display Lettering:** the original `handLetter()` inline SVG alphabet in `src/art.js`; it is artwork, not a font family. It draws lowercase paths with rounded stroke ends, slight rotations, uneven baselines, and a consistent stroke weight. Display lettering therefore has no fabricated font token.
+**Display Lettering:** the existing handLetter() inline SVG alphabet in src/art.js. It is artwork, not a font; it has no fabricated font-family declaration. The lowercase glyph paths retain rounded ends, slight rotations, and uneven baselines.
 
-**Body and Control Font:** the local Avenir Next / Trebuchet MS / Arial sans stack. No font files or remote font service are required.
+**Body and Control Font:** the actual local Avenir Next / Trebuchet MS / Arial sans stack. No font file or remote font service is loaded.
 
-**Character:** display lettering supplies the friendly irregularity; quiet regular and medium sans text supplies precision. Navigation uses wide tracking without heavy weight. Numerical timers and money use tabular figures in the same local font.
+The frontmatter records every font size declared in the current stylesheet, including compact reference-pinned labels, desktop variants, and retained legacy declarations. It also records all declared weights, line heights, and letter-spacing values through observed roles. These are an inventory of the built reference direction, not a request to replace the interface with a new uniform scale.
 
 ### Hierarchy
 
-- **Display:** SVG lettering for the welcome heading, mode names, station titles, and selected sheet/results headings. Size the artwork by its container, preserving its viewBox and accessible label.
-- **Title:** plain section titles; the modal variant uses regular weight.
-- **Headline:** supporting task headings. Customer dialogue uses regular weight, with a larger tablet and desktop treatment.
-- **Body:** baseline readable text; dialogue and recipes have more open line spacing where used.
-- **Label:** medium-weight action text. Smaller control variants and recipe labels remain regular or medium, never bold display substitutes.
-- **Navigation:** regular small labels. The welcome navigation grows at the two wider breakpoints while retaining generous letter spacing.
-- **Supporting:** muted copy; the current game also uses compact contextual labels for persistent progress and tickets.
+- **Display:** SVG lettering for welcome, modes, stations, and selected sheet/results headings. Keep its viewBox and accessible labels.
+- **Titles and dialogue:** title, headline, empty-title, receipt, dialogue, and dialogue-wide describe plain headings and customer speech.
+- **Readable body and actions:** body, supporting, label, hold-label, feature-label, and grandma-quote cover text, actions, and Grandma’s introduction.
+- **Navigation and identity:** navigation, navigation-desktop, wordmark, and drawer-label retain the actual responsive size and tracking changes.
+- **Compact feedback:** progress-caption, stat-caption, micro-label, recipe-status, and footer-copy record the existing small contextual text.
+- **Numerical display:** statistic and statistic-wide use the same font with tabular figures. Timers use the regular title-size treatment.
+- **Disclosure:** disclosure-symbol records the pantry’s plus/minus indicator.
+- **Retained declaration:** legacy-reward records the reward-layer size still present in CSS; current milestone celebration is sound only. It does not authorize restoring a floating visual effect.
 
-**The Two-Handwriting Rule.** Use the original SVG alphabet for short expressive headings, and the local sans stack for instructions, status, controls, and numbers.
+**The Two-Handwriting Rule.** Use the existing SVG alphabet for short expressive headings, and the local sans stack for instructions, status, controls, and numbers.
 
 ## Layout
 
-The general spatial grammar is mobile-first, open, and led by floating artwork. Welcome content is contained to a broad page width (1440px); station content has a tighter working width (940px); results use a reading width (960px). Desktop does not stretch artwork to fill its available area. Side margins expand with the viewport, and the blank areas remain deliberate.
+The spatial grammar is mobile-first and led by original artwork floating on white. Welcome content has a broad container (1440px), station work a tighter container (940px), and results a reading container (960px). Wider screens expand spacing without stretching drawings to fill the page. The welcome composition is surface-specific and is recorded in .impeccable/surfaces/src-app-js.md.
 
-Phones use stacked workspaces, a persistent compact ticket control, and five fixed bottom station actions. The bottom bar respects the safe-area inset. At the tablet breakpoint (700px), tickets become an exposed horizontal rail and ingredient selection expands from four to six columns. Mixing and drinks can place artwork beside controls, and decoration brings options beside the pastry. At the desktop breakpoint (1080px), tickets occupy a separate side rail (310px), divided by a fine line.
+Phones stack workspaces, keep a persistent compact ticket control, and use five fixed bottom station actions with safe-area padding. At the tablet breakpoint (700px), tickets become a horizontal rail, ingredient selection expands from four to six columns, and mixing/drinks can place drawings beside controls. At the desktop breakpoint (1080px), tickets occupy a side rail (310px).
 
-Small phones have a compact adjustment (360px). Short landscape viewports (550px maximum height) reduce header and workspace height, expose more controls horizontally, and suppress the progress ribbon. They also switch back to the compact ticket drawer and fixed bottom station actions, overriding the tablet or desktop ticket rail. Keep this accommodation when extending the game: the working surface and important actions must remain reachable.
+Compact phones have an adjustment (360px). Short landscape screens (550px maximum height) use the compact ticket drawer and fixed station actions even at tablet or desktop widths, reduce workspace spacing, and suppress the progress ribbon. The working area and key actions remain reachable.
 
-Spacing comes from compact gaps inside related controls, larger separation between work areas, and broad white breathing room around art. Distinct welcome-page composition belongs to `.impeccable/surfaces/src-app-js.md`; it is not a template every game screen must repeat.
+Preparation artwork stays separate from state controls. The oven places a crop of the supplied oven beside an open pastry shelf. Decoration shows the original pastry above its progress text and a separate practice guide. The scrapbook exposes the complete supplied ingredient and tool sheets in an expandable illustrated pantry.
 
 ## Elevation & Depth
 
-The built system uses no box shadows. Depth comes from solid hair against open contours, illustration overlap, grayscale liquid or dough fill, and UI rules. Tickets and recipes remain part of the white surface. Temporary dialogs and the phone ticket drawer use translucent black backdrops and plain white sheets; those overlays are the functional layering exception.
+Permanent interface surfaces have no box shadows. Depth comes from the source drawings as supplied, their existing linework, and the layout’s overlap and white space. Do not add shadows, shading, filters, or 3D appearance to those assets. Temporary dialogs and the ticket drawer use dimmed black backdrops with plain white sheets.
 
-**The Flat Paper Rule.** Separate permanent interface regions with space and light rules. Reserve dimmed backdrops for temporary focus sheets.
+**The Flat Paper Rule.** Separate permanent regions with space and light rules; reserve dimmed backdrops for temporary focus sheets.
 
-Motion explains work and response: a short customer entrance, ticket reveal, ingredient drop, whisk rotation, dough rise, cup steam, and bounded monochrome rewards. Reduced motion removes these animations while progress fills, timers, labels, and completion marks remain meaningful. Exact motion and breakpoint values live in the sidecar.
+Supplied characters, food, tools, and cups are static. Final CSS overrides remove image animation, transforms, ingredient-hover rotation, portion animation, and ticket reveal. Existing keyframe declarations are not authority to restore these effects. A brief toast entrance remains an interface response; reduced-motion preferences remove animation and transition behavior. Progress, percentages, timers, checks, and preparation labels carry the work.
 
 ## Shapes
 
-Most interface components are square, borderless white or transparent rows. Main actions use an ink underline; secondary actions use a lighter rule. Choices use a fine bottom edge with a darker, heavier selected edge. The active station has a short, slightly tilted underline.
+Most interface controls are square, transparent or white rows with underlines. Active station navigation uses a short, slightly tilted rule. Native settings checkboxes and the share field remain familiar controls. Supplied image contours are not recreated in CSS or new SVG paths.
 
-Curves belong to physical bakery objects and tactile work controls. The hold control has a subtly uneven outline; tray, oven, toast, cup, pastry, and bowl contours keep their original irregular rounded geometry. Do not spread these object shapes into a generic rounded-card layout. The share fallback field retains its observed rounded border.
+The frontmatter catalogs the exact existing radius values, including individual corners from irregular shorthands. The hold control retains its four-corner outline; the tray and toast retain their observed irregular corners. The meter has a small radius, circular targets/guides/swatches use percentage rounding, and the share field has its existing field radius. These object-specific values are deliberately retained from the reference-pinned build.
 
-Artwork uses rounded stroke ends and joins. Interface icons have consistent original paths; detailed food drawings use finer internal lines and larger outer contours. Mascot silhouettes combine filled hair with a white face and open body, preserving the distinctive profile.
+The legacy-oven-shell and legacy-oven-window entries record CSS still in the file. The current oven unit overrides its shell border and rounding to a plain container, and the current markup uses the supplied oven illustration. Retained geometry does not imply a visible replacement oven.
 
 ## Components
 
@@ -197,67 +343,61 @@ Artwork uses rounded stroke ends and joins. Interface icons have consistent orig
 
 Simple text actions with a visible ink underline.
 
-- **Shape:** square corners and transparent surface.
-- **Primary:** medium sans label, generous minimum touch height (48px), and ink underline (2px).
-- **Secondary / Ghost:** the same text structure with a lighter underline (1px). Compact actions and icon-only controls retain a minimum target (44px).
-- **Hover / Focus:** pointer hover lowers opacity; keyboard focus uses an ink outline (2px) offset from the control (5px). Disabled controls visibly reduce opacity.
+- **Primary:** square transparent surface, medium sans label, ink rule (2px), and a minimum touch height (48px).
+- **Secondary / Ghost:** the same text structure with a lighter rule (1px). Compact and icon-only actions retain minimum targets (44px).
+- **States:** pointer hover lowers opacity; keyboard focus uses an ink outline (2px) with an offset (5px). Disabled controls visibly reduce opacity.
 
 ### Chips
 
-Small inline annotations rather than filled badges.
-
-- **Status:** plain muted text on a transparent surface, with no capsule container.
-- **Recipe:** an inline ingredient drawing and label; a completed item gains an explicit ink check mark.
+Plain inline annotations rather than filled capsules. Recipe chips pair a supplied ingredient crop, or an existing fallback icon where no supplied drawing exists, with readable text. Completion adds an ink check.
 
 ### Cards / Containers
 
-Open rows and rails rather than a stack of filled cards.
-
-- **Tickets:** a profile portrait, customer name, persistent order text, miniature pastry/cup, stage label, and thin patience meter. A fine top rule becomes ink for the active ticket.
-- **Receipts / Upgrades / Scrapbook:** white surfaces separated by rules, using shared pastry and icon artwork.
-- **Sheets:** plain square white modal bodies, aligned to the bottom on phones and centered on larger screens. Scroll within their bounded height. Lead with the heading; tutorial progress follows it, and results status follows the results heading. Dialogs capture keyboard focus, keep Tab navigation inside, and restore the triggering control when closed.
+- **Tickets:** a static original character crop, customer name, persistent order text, unaltered pastry/cup crops, stage label, and thin patience meter. The active ticket has an ink top rule.
+- **Receipts / Upgrades / Scrapbook:** white surfaces with rules and original supplied drawings. The pantry displays both complete supplied sheets.
+- **Sheets:** square white focus sheets, bottom-aligned on phones and centered on larger screens. Headings lead; tutorial progress and results status follow their headings. Dialogs capture keyboard focus, keep Tab inside, and restore the trigger when closed.
 
 ### Inputs / Fields
 
-Native controls with restrained monochrome treatment.
-
-- **Settings:** native checkboxes inside choice rows, ink accent, readable accompanying labels, and the shared keyboard focus outline.
-- **Share field:** a read-only full-width text field, lightly outlined, with a minimum height (48px). It exists for copying the current game URL.
-- **Choice buttons:** label or artwork plus text, transparent background, fine bottom rule, and heavier ink selection. Never communicate state only through a grayscale change.
+Native checkboxes sit in labeled choice rows with the ink accent and shared focus outline. The read-only share field uses its existing full-width light border and minimum height (48px). Choice buttons use a fine bottom rule and heavier ink selection. State is also named in text.
 
 ### Navigation
 
-- **Welcome:** a small Grandma mark and regular, widely spaced text links. Phone navigation hides supplementary label text where the corresponding accessible control remains present. The icon-only share action retains a full touch target (44px by 44px).
-- **Stations:** five icon-and-label actions. Inactive labels are gray; active labels become ink with a short underline. Oven attention adds a small ink dot as well as the persistent oven-alert action.
-- **Responsive behavior:** fixed bottom actions on phones, sticky station actions on wider screens; ticket access changes from drawer to horizontal rail to desktop side rail.
+The welcome pairs a static Grandma portrait crop with small widely spaced links. The icon-only share action preserves a full target (44px by 44px). Stations pair icons with labels; several icons are direct tools-sheet crops and remaining icons use the existing SVG paths. Active state has ink text and a short underline. Oven attention also has a persistent readable alert action.
 
 ### Ingredient Selector
 
-An original ink ingredient drawing floats above a compact readable label. Each control has a generous target; added ingredients gain a small check. Pointer hover gently rotates the drawing. Keep the recipe requirements visible nearby.
+A supplied ingredient crop floats over its readable label, with a generous target and an explicit added check. No hover transform is applied to the artwork. Ingredients without supplied drawings retain the existing fallback icon.
 
 ### Hold Control
 
-A white, irregular rounded outline with an explicit percentage and a bottom ink progress line. The full-width target supports holding or repeated tapping. Its tactile silhouette is specific to stirring and pouring.
+A white irregular outline with an explicit percentage and a bottom ink progress line. Holding, repeated tapping, or keyboard actions advance mixing or pouring. The static original bowl/whisk or cup remains separate from progress feedback.
 
-### Shared Artwork
+### Supplied Artwork and Practice Guide
 
-Use the existing generators in `src/art.js`: profile characters, original lettering, pastries, cup, bowl, tools, containers, and icons. Preserve semantic labels for meaningful artwork and readable text beside interface icons. Asset inventory and restrictions are recorded in `ASSET_MANIFEST.md`.
+Use src/supplied-assets.js for SVG viewport crops of the unchanged local PNGs. The 18 unchanged uploads include separate food/ingredient drawings, the ingredient and tool sheets, and the exact transparent customersandgrandma.png uploaded by the user. That character file is bundled as customer-sheet.png at its original dimensions (3200 by 2000). Seven crop regions preserve the original cast, including its nonhuman characters. Each original character/tool crop has an explicit clip rectangle matching its viewport, preventing neighboring sheet drawings from appearing when its display dimensions differ. Expressions remain as drawn; reaction text provides feedback.
+
+The supplied tools sheet provides static bowl, whisk, scoop, piping bag, kettle, oven, cups, and selected interface icons. Raw, golden, and overbaked pastries reuse the original food image; labels, timer, and progress band communicate preparation state. Drink fill and extras remain in controls and tickets, without clipped liquid fills or extra image marks.
+
+The decoration bench displays the original pastry unchanged. Frosting and sprinkles appear only on the separate practice guide; a percentage and sprinkle count report progress. Existing SVG lettering, fallback icons, serving containers, and environmental vignette lines remain alongside the approved images. No browser runtime library is required.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** follow the user's HEYTEA reference through white space, restrained navigation, original black profile figures, and loose line artwork.
-- **Do** reuse the SVG alphabet and asset generators before adding a new visual vocabulary.
-- **Do** keep art free to float directly on white, with fine rules separating functional regions.
+- **Do** preserve the source PNG bytes, original faces, proportions, existing marks, and transparency.
+- **Do** use SVG viewports to select the required original artwork without modifying its source.
+- **Do** follow the HEYTEA spacing reference while retaining the owner’s supplied art.
+- **Do** show bake state, fill percentage, extras, satisfaction, and reactions through readable interface feedback.
+- **Do** keep frosting practice separate from the unchanged pastry image.
 - **Do** preserve important touch targets, visible focus, persistent tickets and oven alerts, and keyboard or tap alternatives.
-- **Do** pair grayscale state with words, numbers, checks, progress, or another explicit marker.
-- **Do** preserve the complete bakery game while extending this visual system.
+- **Do** retain the existing local font stack and the observed type sizes and object geometry.
 
 ### Don't:
 
-- **Don't** restore generic bold sans hero headings or large gray card surfaces.
-- **Don't** use HEYTEA's logo, brand name, or copied artwork in Grandma’s Bakeria.
-- **Don't** add shadows, decorative gradients, textures, or broad colored surfaces to the permanent interface.
-- **Don't** require downloaded media, fonts, icon packs, sprite sheets, or browser runtime libraries; the sole permitted external image is an optional owner-supplied logo.
-- **Don't** require dragging, rotation, or decorative motion to complete an action.
+- **Don’t** redraw, recolor, shade, animate, or apply filters or 3D effects to the supplied drawings.
+- **Don’t** replace the supplied raw or baked food with generated SVG versions or add liquid fills to the supplied cups.
+- **Don’t** restore generated profile avatars, generic bold sans hero headings, or large gray card surfaces.
+- **Don’t** add remote fonts, stock media, icon packages, or browser runtime libraries.
+- **Don’t** copy HEYTEA’s logo, brand name, or artwork into the game.
+- **Don’t** require dragging, rotation, or decorative motion to complete an action.

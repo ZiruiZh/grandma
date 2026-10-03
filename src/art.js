@@ -1,14 +1,13 @@
-/** Reusable monochrome SVG artwork. No downloaded assets. */
-import { suppliedArt, suppliedPastry, originalCharacter } from './supplied-assets.js';
-export { suppliedArt } from './supplied-assets.js';
+/** Original supplied artwork composed with reusable monochrome SVG. */
+import { suppliedArt, suppliedPastry, originalCharacter, suppliedTool } from './supplied-assets.js';
+export { suppliedArt, suppliedTool } from './supplied-assets.js';
 const INK = '#080808';
-let serial = 0;
-const uid = prefix => `bakeria-${prefix}-${++serial}`;
 const clamp = value => Math.max(0, Math.min(1, Number(value) || 0));
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const svg = (box, content, label = '', cls = '', extra = '') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}" class="art ${esc(cls)}" ${label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true"'} ${extra}>${content}</svg>`;
 /** A shared, stroke-based interface and station icon collection. */
 export function icon(name, size = 24) {
+  if (['play','pause','home','settings','sound','muted','arrow','check','clock','oven','bowl','scoop','piping','kettle','whisk'].includes(name)) return suppliedTool(name, '', `icon icon-${name}`);
   const paths = {
     play: '<path d="m9 5 11 7-11 7Z" fill="currentColor" stroke-linejoin="round"/>',
     pause: '<path d="M8 5v14M16 5v14" stroke-width="4"/>',
@@ -119,7 +118,7 @@ export function grandmaVignette(progress = {}) {
     ${runs ? `<path d="m188 277-20 24h59l20-24Zm-16 29h56m-56 7h55"/><path d="M185 290h33" stroke-width="2"/>` : nest(cup({type:'tea',fill:.8}),147,239,57,65)}
     <path d="M43 253v-28q20-11 42-1 24-10 45 1v28q-22-7-45 1-24-9-42-1Zm42-29v30"/><path d="M53 234h22m-22 7h17m25-7h25m-25 7h20" stroke-width="2"/>
     ${nest(character('grandma',regulars >= 2 ? 'happy' : 'neutral'),187,63,183,218)}
-    ${nest(cup({type:'tea',fill:.8}),176,184,70,75)}
+    ${nest(cup({type:'tea',fill:.8}),145,184,42,75)}
     ${nest(suppliedArt('croissant', 'A croissant on Grandma’s display'),24,279,112,43)}
     <path d="M309 34q8-12 14 0 9-12 14 1-3 8-14 15-11-7-14-16Z" fill="none" stroke-width="3"/>
   </g>`, `Grandma beside her recipe book and ${runs} flyer runs, with a quiet cup of tea.`, 'grandma-vignette');
@@ -136,29 +135,18 @@ export function pastry(family = 'cookie', options = {}) {
   return suppliedPastry(family, options);
 }
 
-const mascotStamp = '';
-
+/** Original cup drawing; fill/extras are shown by controls and ticket text. */
 export function cup(options = {}) {
-  const level = clamp(options.fill ?? .8), cid = uid('cup');
-  const extras = options.extras || [];
-  const liquid = options.type === 'tea' ? '#d6d6d6' : options.type === 'hot-chocolate' ? '#888888' : extras.includes('milk') ? '#b1b1b1' : '#555555';
-  const top = 116-level*74, lid = options.lid || options.takeaway;
-  return svg('0 0 140 150', `<defs><clipPath id="${cid}"><path d="M33 43h73l-9 72q-27 9-56 0Z"/></clipPath></defs><g stroke="${INK}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    ${level > .2 && !lid ? '<g class="cup-steam" fill="none" stroke="#666"><path d="M54 31q-7-7 0-14t0-13m20 24q-7-7 0-14m19 17q-7-7 0-14"/></g>' : ''}
-    ${lid ? '' : '<path d="M106 54h7c25 0 19 40-11 40" fill="none" stroke-width="7"/>'}
-    <path d="M29 39h81l-10 82q-30 12-62 0Z" fill="white"/>
-    <g clip-path="url(#${cid})" stroke="none"><rect x="32" y="${top}" width="75" height="85" fill="${liquid}"/><ellipse cx="70" cy="${top}" rx="37" ry="5" fill="#e6e6e6"/>${extras.includes('milk') ? `<path d="M43 ${top+8}q30 11 48-1" fill="none" stroke="white" stroke-width="4"/>` : ''}${extras.includes('marshmallows') ? [48,68,86].map((x,i)=>`<rect x="${x}" y="${top-5+i%2*4}" width="13" height="11" rx="3" fill="white" stroke="${INK}" stroke-width="1"/>`).join('') : ''}</g>
-    <path d="M30 39q40 9 79 0" fill="none"/><path d="M97 56H84" stroke-dasharray="3 3"/><g transform="translate(58 78) scale(.7)">${mascotStamp}</g>
-    ${extras.includes('cream') && level > .2 ? '<path d="M42 46q-5-12 13-15-4-11 15-12 8-1 10-9 16 12 8 22 16-2 10 14Z" fill="white" stroke-width="1.5"/>' : ''}
-    ${lid ? `<path d="M29 33h81l5 9v7H25v-7Z" fill="${INK}"/><path d="M37 28h65v6H37Z" fill="${INK}"/><path d="m40 80 61 0-4 27q-27 7-53 0Z" fill="white"/><g transform="translate(58 81) scale(.7)">${mascotStamp}</g>` : ''}
-  </g>`, `${options.type || 'coffee'}, ${Math.round(level*100)}% full${lid ? ', takeaway' : ''}`, 'drink-cup');
+  const key = options.lid || options.takeaway ? 'coffee-cup' : options.type === 'tea' ? 'tea-cup' : options.type === 'hot-chocolate' ? 'chocolate-cup' : 'coffee-cup';
+  return suppliedTool(key, `${options.type || 'cup'}, ${Math.round(clamp(options.fill ?? .8)*100)}% full${options.lid ? ', takeaway lid added' : ''}`, 'drink-cup');
 }
 
 export function bowl(progress = 0, ingredients = 0) {
-  return svg('0 0 280 200', `<g stroke="${INK}" stroke-width="3" stroke-linecap="round"><path d="M43 85q6 91 97 91t97-91" fill="white"/><ellipse cx="140" cy="85" rx="98" ry="28" fill="white"/>${ingredients ? `<ellipse cx="140" cy="89" rx="80" ry="19" fill="${progress > .6 ? '#c4c4c4' : '#e7e7e7'}" stroke="none"/><path class="mixture-swirl" d="M91 85q37-20 86 5-34 21-64-1 19-10 39 2" fill="none" stroke="white" stroke-width="5"/>` : ''}<g class="bowl-whisk" style="transform-origin:143px 91px"><path d="m155 76 48-59" stroke-width="10"/><path d="M155 76c-41-15-53 27-29 33l29-33c5 29-9 42-29 33m29-33c-16 0-44 30-29 33" fill="none" stroke="#777" stroke-width="3"/></g><path d="M43 86q5 28 97 30 93-3 97-30" fill="none"/><path d="m129 150 11 10 11-10" fill="none"/></g>`, 'Mixing bowl and whisk', 'mixing-bowl');
+  const nest = (art,x,y,w,h) => art.replace('<svg ', `<svg x="${x}" y="${y}" width="${w}" height="${h}" `);
+  return svg('0 0 280 200', `${nest(suppliedTool('bowl'),35,60,160,120)}${nest(suppliedTool('whisk'),201,23,53,135)}`, 'Original mixing bowl and whisk', 'mixing-bowl');
 }
 
-export const ingredientIcon = name => ['flour','butter','egg','milk','cocoa','blueberries','raisins','honey'].includes(name) ? suppliedArt(name, name) : name === 'chocolate-chips' ? suppliedArt('chocolate', 'Chocolate chips') : icon(String(name).replace('chocolate-chips','chips'), 32);
+export const ingredientIcon = name => ['flour','butter','egg','milk','cocoa','blueberries','raisins','honey'].includes(name) ? suppliedArt(name) : name === 'chocolate-chips' ? suppliedArt('chocolate') : icon(String(name).replace('chocolate-chips','chips'), 32);
 export const ingredient = ingredientIcon;
 export function toolIcon(name, size = 72) {
   if (['tray','plate','box'].includes(name)) return servingContainer(name);

@@ -4,7 +4,7 @@ import {
   createProfile, createSession, dispatch, tick, nextDay, dailyChallenge,
   saveGame, loadGame, getBakeWindow, DRINK_FILL_TARGET,
 } from './engine.js';
-import { brandMark, character, pastry, ingredientIcon, toolIcon, icon, cup, bowl, grandmaVignette, handLetter, servingContainer, suppliedArt } from './art.js';
+import { brandMark, character, pastry, ingredientIcon, toolIcon, icon, cup, bowl, grandmaVignette, handLetter, servingContainer, suppliedArt, suppliedTool } from './art.js';
 
 const app = document.querySelector('#app');
 const announcer = document.querySelector('#announcer');
@@ -26,7 +26,6 @@ let lastCustomerVisual = '';
 const seenTicketIds = new Set();
 const trackedCompletions = new Set();
 const celebratedMilestones = new Set();
-let droppedIngredient = '';
 let modalFocusReturn = '';
 
 const previous = loadGame();
@@ -235,7 +234,7 @@ function renderMixing() {
   const readyIngredients = required.every(id => order.ingredients.includes(id));
   let work = '';
   if (order.stage === 'ingredients') {
-    work = `<div class="ingredient-worktop"><div class="bowl-wrap ${droppedIngredient ? 'ingredient-drop' : ''}">${bowl(0,order.ingredients.length)}${droppedIngredient ? `<span class="falling-ingredient">${ingredientIcon(droppedIngredient)}</span>` : ''}</div><div class="recipe-card"><strong>grandma’s recipe</strong><span>${order.ingredients.filter(id=>required.includes(id)).length} / ${required.length} ingredients added</span></div></div><div class="recipe-strip" aria-label="Recipe ingredients">${required.map(id => `<span class="recipe-chip ${order.ingredients.includes(id) ? 'done' : ''}">${ingredientIcon(id)}${cap(id)}</span>`).join('')}</div>
+    work = `<div class="ingredient-worktop"><div class="bowl-wrap">${bowl(0,order.ingredients.length)}</div><div class="recipe-card"><strong>grandma’s recipe</strong><span>${order.ingredients.filter(id=>required.includes(id)).length} / ${required.length} ingredients added</span></div></div><div class="recipe-strip" aria-label="Recipe ingredients">${required.map(id => `<span class="recipe-chip ${order.ingredients.includes(id) ? 'done' : ''}">${ingredientIcon(id)}${cap(id)}</span>`).join('')}</div>
       <div class="ingredient-shelf">${INGREDIENTS.map(item => `<button class="ingredient-btn ${order.ingredients.includes(item.id) ? 'added' : ''}" data-ingredient="${item.id}">${ingredientIcon(item.id)}${escapeHtml(item.name)}</button>`).join('')}</div>
       <p class="muted">Add the ingredients on Grandma’s recipe card. A wrong scoop is recoverable, but it costs a little.</p>`;
   } else if (order.stage === 'mixing') {
@@ -265,8 +264,8 @@ function renderOven() {
     const item = baking[i];
     return `<div class="oven-slot ${item ? 'baking' : ''}">${item ? `<div><div class="bake-pastries">${Array.from({length:item.quantity},()=>pastry(item, item.bakeTime < getBakeWindow(item,profile).goldenStart ? 'raw' : item.bakeTime <= getBakeWindow(item,profile).goldenEnd ? 'golden' : 'overbaked')).join('')}</div><small data-bake-order="${item.id}">${escapeHtml(customerName(item))} · ${Math.round(item.bakeTime)}s</small></div>` : '<span>Empty shelf</span>'}</div>`;
   }).join('');
-  return stationShell('Oven', 'Warm, watchful, and wonderfully fragrant', `<div class="oven-unit"><div class="oven-window ${baking.length ? 'hot' : ''}"><div class="oven-shelf">${slotsHtml}</div>${baking.length ? '<div class="steam"><i style="--x:-20px"></i><i style="--x:50px;--delay:.5s"></i><i style="--x:130px;--delay:1s"></i></div>' : ''}</div>
-    <div class="oven-controls"><div><div class="bake-band" aria-label="Baking progress"><span style="--bake:${pct(bakeRatio)}"></span></div><small class="bake-status">${order?.stage === 'baking' ? qualityLabel : 'The golden band is generous.'}</small></div><span class="timer-display">${order?.stage === 'baking' ? `${Math.round(order.bakeTime)}s` : '—'}</span></div>
+  return stationShell('Oven', 'Warm, watchful, and wonderfully fragrant', `<div class="oven-unit"><div class="oven-workspace"><div class="oven-illustration">${suppliedTool('oven', 'Grandma’s original oven drawing')}</div><div class="oven-shelf">${slotsHtml}</div></div>
+    <div class="oven-controls"><div><div class="bake-band" aria-label="Baking progress"><span style="--bake:${pct(bakeRatio)}"></span></div><small class="bake-status">${order?.stage === 'baking' ? qualityLabel : 'The golden band is generous.'}</small></div><span class="timer-display" aria-label="Live bake timer">${order?.stage === 'baking' ? `${Math.round(order.bakeTime)}s` : '—'}</span></div>
     <div class="button-row" style="margin-top:1rem">${selectedCanBake ? `<button class="btn" data-game="start-bake" ${baking.length >= slots ? 'disabled' : ''}>Put tray in oven</button>` : ''}${order?.stage === 'baking' ? '<button class="btn" data-game="remove-bake">Remove selected tray</button>' : ''}${order?.stage === 'baked' ? '<button class="btn secondary" data-station="decorating">Decorate this batch</button>' : ''}${!order ? '<span class="muted">Select a ticket to check its tray.</span>' : ''}</div>
   </div>`);
 }
@@ -283,8 +282,8 @@ function renderDecorating() {
     ${isCupcake ? `<strong>Frosting</strong>${frostings.map((f, i) => `<button class="choice-button ${decor.frosting === f ? 'active' : ''}" data-frosting="${f}"><span class="frosting-swatch" style="--shade:${['#fff','#999','#222'][i % 3]}"></span>${cap(f)}</button>`).join('')}` : '<span class="pill">No frosting needed</span>'}
     ${topping ? `<button class="choice-button ${decor.toppings?.includes(topping) ? 'active' : ''}" data-topping="${topping}">${ingredientIcon(topping)} Add ${cap(topping)}</button>` : '<span class="muted">No topping requested.</span>'}
     <button class="choice-button" data-game="decorate">Pipe a little</button><button class="btn secondary" data-game="finish-decoration">Finish pastry</button>
-  </div><div id="decor-canvas" class="decor-canvas" aria-label="Pastry decorating area. Tap or drag along the guide."><div class="decor-pastry">${pastry(order, 'golden')}</div>${isCupcake ? '<div class="pipe-guide"></div>' : ''}${Array.from({length:Math.round((decor.coverage || 0)*12)},(_,i)=>`<i class="frosting-mark" style="left:${40 + (i%4)*7}%;top:${39 + Math.floor(i/4)*8}%;--frosting:${decor.frosting === 'strawberry' ? '#d4d4d4' : decor.frosting === 'chocolate' ? '#777' : '#fff'}"></i>`).join('')}${Array.from({length:decor.sprinkles || 0},(_,i)=>`<i class="sprinkle-mark" style="left:${36+(i*17)%32}%;top:${36+(i*23)%34}%;--rotate:${(i*37)%150}deg;--sprinkle:${['#191919','#777','#444','#aaa'][i%4]}"></i>`).join('')}</div></div>
-    <p class="muted">${isCupcake ? `Tap or drag over the pastry to pipe a forgiving swirl${topping ? `, then add ${cap(topping).toLowerCase()}` : ''}.` : 'Give the baked pastry a quick finishing check, then mark it ready.'}</p>
+  </div><div class="decoration-bench"><div class="decor-pastry">${pastry(order, 'golden')}</div>${isCupcake ? `<p class="decor-progress">${Math.round((decor.coverage || 0)*100)}% piped · ${decor.sprinkles || 0} sprinkles</p><div id="decor-canvas" class="decor-canvas" aria-label="Frosting practice guide. Tap or drag inside the guide."><div class="piping-target"></div>${isCupcake ? '<div class="pipe-guide"></div>' : ''}${Array.from({length:Math.round((decor.coverage || 0)*12)},(_,i)=>`<i class="frosting-mark" style="left:${40 + (i%4)*7}%;top:${39 + Math.floor(i/4)*8}%;--frosting:${decor.frosting === 'strawberry' ? '#d4d4d4' : decor.frosting === 'chocolate' ? '#777' : '#fff'}"></i>`).join('')}${Array.from({length:decor.sprinkles || 0},(_,i)=>`<i class="sprinkle-mark" style="left:${36+(i*17)%32}%;top:${36+(i*23)%34}%;--rotate:${(i*37)%150}deg;--sprinkle:${['#191919','#777','#444','#aaa'][i%4]}"></i>`).join('')}</div>` : ''}</div></div>
+    <p class="muted">${isCupcake ? `Tap or drag inside the guide to pipe a forgiving swirl${topping ? `, then add ${cap(topping).toLowerCase()}` : ''}.` : 'Give the baked pastry a quick finishing check, then mark it ready.'}</p>
   </div>`);
 }
 
@@ -393,7 +392,7 @@ function upgradeShop() {
 
 function scrapbookModal() {
   const discovered = Array.isArray(profile.scrapbook) ? profile.scrapbook : [];
-  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="scrap-title"><div class="modal-body"><h2 id="scrap-title">${handLetter('recipe book')}</h2><p>Recipes, personal bests, and game stamps live in this browser. They are keepsakes from play, not purchase rewards.</p><div class="scrapbook-grid">${Object.values(RECIPES).map(recipe => { const entries = discovered.filter(item => item.family === recipe.id); const open = recipe.unlockDay <= (profile.unlockedDay || 1) || entries.length; const best = entries.length ? Math.max(...entries.map(item => item.score || 0)) : 0; return `<div class="scrap-card">${pastry({family:recipe.id, flavor:'vanilla'}, open ? 'golden' : 'raw')}<strong>${open ? escapeHtml(recipe.name) : 'Recipe tucked away'}</strong><p class="muted">${open ? escapeHtml(recipe.description) : `Unlocks in Story Day ${recipe.unlockDay}`}</p><span class="pill">Best ${best || '—'}${best ? '%' : ''}</span></div>`; }).join('')}</div><details class="pantry-artbook"><summary>Grandma’s illustrated pantry</summary><figure>${suppliedArt('recipe-sheet', 'Grandma’s supplied sketches: croissant, cookie, muffins, cupcakes, flour, egg, chocolate, raisins, butter, milk, blueberries, tea cup, honey and cocoa')}<figcaption>The little ingredients behind our favorite bakes.</figcaption></figure></details><div class="button-row"><button class="btn" data-action="close-scrapbook">Close scrapbook</button></div></div></section></div>`;
+  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="scrap-title"><div class="modal-body"><h2 id="scrap-title">${handLetter('recipe book')}</h2><p>Recipes, personal bests, and game stamps live in this browser. They are keepsakes from play, not purchase rewards.</p><div class="scrapbook-grid">${Object.values(RECIPES).map(recipe => { const entries = discovered.filter(item => item.family === recipe.id); const open = recipe.unlockDay <= (profile.unlockedDay || 1) || entries.length; const best = entries.length ? Math.max(...entries.map(item => item.score || 0)) : 0; return `<div class="scrap-card">${pastry({family:recipe.id, flavor:'vanilla'}, open ? 'golden' : 'raw')}<strong>${open ? escapeHtml(recipe.name) : 'Recipe tucked away'}</strong><p class="muted">${open ? escapeHtml(recipe.description) : `Unlocks in Story Day ${recipe.unlockDay}`}</p><span class="pill">Best ${best || '—'}${best ? '%' : ''}</span></div>`; }).join('')}</div><details class="pantry-artbook"><summary>Grandma’s illustrated pantry</summary><figure>${suppliedArt('recipe-sheet', 'Grandma’s supplied sketches: croissant, cookie, muffins, cupcakes, flour, egg, chocolate, raisins, butter, milk, blueberries, tea cup, honey and cocoa')}<figcaption>The little ingredients behind our favorite bakes.</figcaption></figure><figure>${suppliedArt('tools-sheet', 'Grandma’s original baking tools, oven, cups and interface sketches')}<figcaption>Grandma’s tools and favorite cups.</figcaption></figure></details><div class="button-row"><button class="btn" data-action="close-scrapbook">Close scrapbook</button></div></div></section></div>`;
 }
 
 function shareFallbackModal() {
@@ -402,16 +401,14 @@ function shareFallbackModal() {
 
 function doAction(type, payload = {}) {
   if (!session) return;
-  const servedOrder = type === 'serve' ? selectedOrder() : null;
   const result = dispatch(session, profile, { type, ...payload });
-  droppedIngredient = type === 'add-ingredient' && result.ok ? payload.ingredient : '';
   if (!result?.ok && result?.message) showToast(result.message);
   else if (type === 'serve' && result?.score) showToast(`${result.message} · ${result.score.payment} coins + ${result.score.tip} tip`);
   else if (result?.message) announce(result.message);
   if (type === 'add-ingredient') sound('mix');
   if (type === 'fill-drink') sound('pour');
   if (type === 'remove-bake') sound('ding');
-  if (type === 'serve' && result.ok) { sound('payment'); rewards(servedOrder); }
+  if (type === 'serve' && result.ok) sound('payment');
   saveGame(profile, session);
   render();
 }
@@ -506,7 +503,7 @@ function bindDecorCanvas() {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
-    const pastryRect = canvas.querySelector('.decor-pastry').getBoundingClientRect();
+    const pastryRect = canvas.querySelector('.piping-target').getBoundingClientRect();
     if (e.clientX < pastryRect.left || e.clientX > pastryRect.right || e.clientY < pastryRect.top || e.clientY > pastryRect.bottom) return;
     const order = selectedOrder();
     if (order?.decoration.toppings.includes('sprinkles')) dispatch(session,profile,{type:'topping',topping:'sprinkles',x,y});
@@ -541,19 +538,8 @@ function showToast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => node.remove(), 2400); announce(message);
 }
 
-function rewards(order) {
-  const layer = document.createElement('div'); layer.className = 'reward-layer';
-  layer.setAttribute('aria-hidden','true');
-  layer.innerHTML = `${order ? `<span class="service-moment">${character(customerById(order.customerId),'happy')}<span class="served-package ${order.takeaway ? 'box-closing' : ''}">${servingContainer(order.takeaway ? 'box' : 'plate')}</span></span><span class="payment-coin">${icon('coin')}</span>` : ''}` + Array.from({length: profile.settings?.reducedMotion ? 2 : 7}, (_, i) => `<i class="float-reward" style="--x:${42 + i*3}%">${icon(i%2 ? 'heart' : 'star')}</i>`).join('');
-  document.body.append(layer); setTimeout(() => layer.remove(), 1600);
-}
-
 function celebration() {
   sound('milestone');
-  if (profile.settings?.reducedMotion) return;
-  const layer = document.createElement('div'); layer.className = 'reward-layer';
-  layer.innerHTML = Array.from({length: 26}, (_, i) => `<i class="confetti" style="--x:${(i*37)%100}%;--drift:${(i%2?1:-1)*(20+i*3)}px;--color:${['#bd4b40','#e0a33a','#74886a','#a9d3d0'][i%4]};animation-delay:${(i%7)*.07}s"></i>`).join('');
-  document.body.append(layer); setTimeout(() => layer.remove(), 2200);
 }
 
 async function shareGame() {

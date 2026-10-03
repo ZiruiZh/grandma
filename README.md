@@ -1,8 +1,8 @@
 # Grandma’s Bakeria
 
-An original browser game about helping Grandma grow a bakery through care, good pastries, and happy returning neighbors. The mobile-first white-and-ink interface follows the HEYTEA reference (https://www.heytea.com/). Food and ingredient drawings use the supplied original PNGs without recoloring or shading. Characters use static viewport crops of a direct capture of the supplied Goodnotes page. Headings use reusable SVG lettering; controls use local system fonts.
+An original browser game about helping Grandma grow a bakery through care, good pastries, and happy returning neighbors. The mobile-first white-and-ink interface follows the HEYTEA reference (https://www.heytea.com/). Food and ingredient drawings use the supplied original PNGs without recoloring or shading. Characters use static viewport crops of the supplied transparent character sheet. Headings use reusable SVG lettering; controls use local system fonts.
 
-Every visual is created with reusable HTML, CSS, inline SVG, or procedural animation. There are no downloaded images, textures, models, fonts, videos, icon packs, sprite sheets, or audio files. The browser has **zero runtime dependencies**.
+The app bundles all 18 unchanged PNGs supplied by the user. The original drawings are static; no redraws, recoloring, shading, or 3D effects are applied. Reusable HTML/CSS and SVG supply layout, lettering, and remaining controls. There are no external fonts, videos, icon packs, sprites, audio downloads, or runtime libraries.
 
 ## Run locally
 
@@ -34,7 +34,7 @@ Quick Play welcomes first-time players with three customers. Story Mode follows 
 
 The selected ticket identifies which bowl, tray, drink, and finished items you are working on. Switch tickets to work on another order. Remake an item if needed; the small ingredient charge is recoverable through later sales. Sound is optional. Pause and relaxed play are available, and the game pauses when its browser tab is hidden.
 
-The controls support pointer and touch input. Focus buttons with Tab and activate them with Enter or Space; use number keys 1–5 to switch stations and Escape to pause. Tap/select-and-place controls provide alternatives to drawing or dragging, including the “Pipe a little” button. Reduced-motion preferences are respected. The monochrome baking display pairs shade changes with explicit underbaked, golden, and overbaked status text.
+The controls support pointer and touch input. Focus buttons with Tab and activate them with Enter or Space; use number keys 1–5 to switch stations and Escape to pause. Tap/select-and-place controls provide alternatives to drawing or dragging, including the “Pipe a little” button. Reduced-motion preferences are respected. The baking display uses explicit underbaked, golden, and overbaked status text and a live timer while keeping the original pastry drawing unchanged.
 
 ## Progress and game economy
 
@@ -76,8 +76,10 @@ The game is designed to introduce the bakery and its products, encourage repeat 
 - `src/engine.js` — game state, actions, timers, progression, scoring, and local saves.
 - `src/data.js` — recipes, customers, story scheduling, dialogue, and upgrades.
 - `src/business-config.js` — optional real bakery configuration.
-- `src/art.js` — reusable vector characters, pastries, tools, cups, and icons.
-- `src/styles.css` — mobile-first monochrome interface, responsive layouts, station work surfaces, and procedural effects.
+- `src/art.js` — reusable artwork composition, lettering, and remaining vector controls.
+- `src/supplied-assets.js` — original asset mappings and sheet viewports.
+- `src/assets/` — unchanged supplied PNGs, original character sheet, and provenance manifest.
+- `src/styles.css` — mobile-first monochrome interface, responsive layouts and station work surfaces.
 - `tests/engine.test.js` — deterministic game-rule regression tests.
 - `tests/business-config.test.js` — business-link, offer-expiry, and analytics boundary tests.
 - `ASSET_MANIFEST.md` — complete reusable asset inventory.

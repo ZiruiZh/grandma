@@ -189,17 +189,23 @@ export const SUPPLIED_ASSETS = {
   },
   "customer-sheet": {
     "file": "customer-sheet.png",
-    "width": 596,
-    "height": 770,
+    "width": 3200,
+    "height": 2000,
     "bounds": [
-      0,
-      0,
-      596,
-      770
+      136,
+      135,
+      3038,
+      1908
     ]
   }
 };
 const assetUrl = file => new URL(`./assets/${file}`, import.meta.url).href;
+let cropSerial = 0;
+function originalCrop(file, sourceWidth, sourceHeight, bounds, cls, label = '') {
+  const [x,y,right,bottom] = bounds;
+  const id = `original-crop-${++cropSerial}`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${right-x} ${bottom-y}" class="art ${escape(cls)}" ${label ? `role="img" aria-label="${escape(label)}"` : 'aria-hidden="true"'}><defs><clipPath id="${id}"><rect x="${x}" y="${y}" width="${right-x}" height="${bottom-y}"/></clipPath></defs><image clip-path="url(#${id})" href="${assetUrl(file)}" width="${sourceWidth}" height="${sourceHeight}"/></svg>`;
+}
 const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /** Crop transparent padding with an SVG viewport; never alter the source image. */
@@ -218,13 +224,13 @@ export function suppliedPastry(family, options = {}) {
 }
 
 export const ORIGINAL_CAST = {
-  grandma: {name:'Grandma', bounds:[411,20,563,288]},
-  maple: {name:'Mr. Maple', bounds:[230,28,377,267]},
-  theo: {name:'Theo', bounds:[42,29,190,262]},
-  maya: {name:'Maya', bounds:[4,282,234,541]},
-  sam: {name:'Sam', bounds:[248,308,350,536]},
-  ruby: {name:'Ruby', bounds:[366,369,582,548]},
-  june: {name:'June', bounds:[140,560,420,713]},
+  grandma: {name:'Grandma', bounds:[1644,119,2178,1040]},
+  maple: {name:'Mr. Maple', bounds:[1018,160,1534,1002]},
+  theo: {name:'Theo', bounds:[256,157,797,947]},
+  maya: {name:'Maya', bounds:[120,1020,961,1885]},
+  sam: {name:'Sam', bounds:[1072,1094,1431,1894]},
+  ruby: {name:'Ruby', bounds:[1502,1291,2214,1924]},
+  june: {name:'June', bounds:[2216,1373,3054,1845]},
 };
 
 /** A viewport crop of the original sheet. No redraw, recolor, shading, or movement. */
@@ -232,6 +238,21 @@ export function originalCharacter(person = 'grandma', cls = '', portrait = false
   const id = String(person?.id || person).replace('mr-', '');
   const key = ORIGINAL_CAST[id] ? id : 'grandma';
   const cast = ORIGINAL_CAST[key];
-  const [x,y,right,bottom] = portrait ? [411,20,563,169] : cast.bounds;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${right-x} ${bottom-y}" class="art character original-character character-${key} ${escape(cls)}" role="img" aria-label="${cast.name}"><image href="${assetUrl('customer-sheet.png')}" width="596" height="770"/></svg>`;
+  return originalCrop('customer-sheet.png',3200,2000,portrait ? [1644,119,2130,625] : cast.bounds,`character original-character character-${key} ${cls}`,cast.name);
+}
+
+/** Viewport regions of the unchanged tools sheet. */
+export const TOOL_REGIONS = {
+  bowl:[126,160,318,309], whisk:[436,132,531,334], scoop:[158,438,358,544],
+  piping:[382,381,580,580], oven:[809,370,1485,1135], kettle:[143,653,332,835],
+  'coffee-cup':[1648,299,1811,602], 'tea-cup':[1920,402,2107,600],
+  'chocolate-cup':[1640,709,1863,938], 'milk-cup':[1962,710,2097,899],
+  pause:[141,960,265,1109], play:[356,1002,470,1123], home:[537,988,692,1132],
+  settings:[127,1193,280,1339], sound:[349,1226,486,1342], muted:[577,1232,744,1364],
+  arrow:[1134,1262,1242,1354], check:[1409,1247,1634,1451], clock:[1795,1030,1961,1189],
+};
+export function suppliedTool(key, label = '', cls = '') {
+  const bounds = TOOL_REGIONS[key];
+  if (!bounds) return '';
+  return originalCrop('tools-sheet.png',2360,1640,bounds,`supplied-art sheet-crop tool-${key} ${cls}`,label);
 }
