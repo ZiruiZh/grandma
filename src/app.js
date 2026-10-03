@@ -4,8 +4,7 @@ import {
   createProfile, createSession, dispatch, tick, nextDay, dailyChallenge,
   saveGame, loadGame, getBakeWindow, DRINK_FILL_TARGET,
 } from './engine.js';
-import { brandMark, character, pastry, ingredientIcon, toolIcon, icon, cup, servingContainer } from './art.js';
-import { createBakeryStage } from './scene3d.js';
+import { brandMark, character, pastry, ingredientIcon, toolIcon, icon, cup, bowl, grandmaVignette, handLetter, servingContainer, suppliedArt } from './art.js';
 
 const app = document.querySelector('#app');
 const announcer = document.querySelector('#announcer');
@@ -26,7 +25,9 @@ let heldTimer = 0;
 let lastCustomerVisual = '';
 const seenTicketIds = new Set();
 const trackedCompletions = new Set();
-let threeStage = null;
+const celebratedMilestones = new Set();
+let droppedIngredient = '';
+let modalFocusReturn = '';
 
 const previous = loadGame();
 if (previous?.profile) profile = previous.profile;
@@ -85,46 +86,28 @@ function businessLinks(className = 'button-row') {
 function renderWelcome() {
   const challenge = dailyChallenge(new Date());
   const currentSave = loadGame();
-  const resumable = currentSave?.session && currentSave.session.mode === 'story' && currentSave.session.phase !== 'complete';
-  const flyerRuns = Math.max(0, 3 - (profile.advertising?.runsCancelled || 0));
-  const flyerLabels = ['Fresh baking today!', 'Neighborhood treats', 'Please visit us!'];
+  const resumable = currentSave?.session?.mode === 'story' && currentSave.session.phase !== 'complete';
   app.innerHTML = `<main class="welcome app-shell">
-    <section class="welcome-scene" aria-label="Grandma stands behind her counter with her recipe book, ${flyerRuns} planned flyer runs, and ${profile.regulars?.length || 0} notes from regular customers.">
-      <div id="three-welcome" class="three-stage welcome-stage" aria-hidden="true"></div>
-      <div class="welcome-art"><div class="grandma-hero">${character(GRANDMA, 'neutral')}</div></div>
-      <div class="recipe-book"><strong>Grandma’s recipes</strong><span>Butter, patience & a pinch of joy.</span></div>
-      ${flyerRuns ? `<div class="flyer-stack" aria-label="${flyerRuns} planned flyer runs">${flyerLabels.slice(0, flyerRuns).map(label => `<div class="flyer">${label}</div>`).join('')}</div>` : '<div class="flyer-stack" aria-label="All flyer runs cancelled"><div class="flyer">Tea time at last!</div></div>'}
-    </section>
-    <section class="welcome-copy">
-      ${wordmark()}
-      <p class="eyebrow">${escapeHtml(BUSINESS.tagline)}</p>
-      <div><p class="eyebrow">A cozy bakery game</p><h1>Bake a place they’ll <em>remember.</em></h1></div>
-      <p class="story">${escapeHtml(BUSINESS.story)}</p>
-      <blockquote class="grandma-quote">“${escapeHtml(BUSINESS.introduction)}”</blockquote>
+    <header class="welcome-header">${wordmark()}<nav class="welcome-nav" aria-label="Bakery links"><button data-start="story">${resumable ? 'continue story' : 'story mode'}</button><button data-action="scrapbook">recipe book</button><button data-action="share" aria-label="Share the game"><span>share</span>${icon('share')}</button></nav></header>
+    <section class="welcome-main" aria-label="Welcome to Grandma’s Bakeria">
+      <div class="hero-profile" aria-hidden="true">${character(GRANDMA,'happy')}</div>
+      <div class="welcome-copy"><h1 class="welcome-heading" aria-label="Good bakes by Grandma">${handLetter('good bakes')}${handLetter('by grandma')}</h1></div>
+      <figure class="welcome-scene">${grandmaVignette({regulars:profile.regulars?.length || 0,runsCancelled:profile.advertising?.runsCancelled || 0})}<figcaption class="sr-only">${escapeHtml(BUSINESS.introduction)}</figcaption></figure>
       <div class="mode-grid" aria-label="Choose a game mode">
-        <button class="mode-card" data-start="quick"><strong>Quick Play</strong><span>Serve three neighbors in one complete bakery shift. No sign-up needed.</span><span class="mode-time">About 2–3 minutes</span></button>
-        <button class="mode-card" data-start="story"><strong>${resumable ? 'Continue Story' : 'Story Mode'}</strong><span>Grow through five days, earn regulars, unlock recipes, and host a neighborhood tea party.</span><span class="mode-time">Five short days</span></button>
+        <button class="mode-card mode-quick" data-start="quick"><span><strong>${handLetter('quick play')}</strong><span>3 neighbors · 2–3 minutes</span></span>${icon('arrow')}</button>
+        <button class="mode-card mode-story" data-start="story"><span><strong>${handLetter(resumable ? 'continue story' : 'story mode')}</strong><span>5 days to give Grandma time for tea</span></span>${icon('arrow')}</button>
       </div>
-      <div class="button-row">
-        <button class="btn ghost small" data-start="daily">Today’s challenge · ${escapeHtml(challenge?.name || challenge?.title || 'Golden batch')}</button>
-        <button class="btn ghost small" data-action="scrapbook">Baking scrapbook</button>
-        <button class="btn ghost small" data-action="share">${icon('share')} Share the game</button>
-      </div>
-      ${businessLinks('welcome-links')}
+      <p class="play-note">a little baking break. no sign-up needed.</p>
     </section>
+    <section class="grandma-note"><span class="note-symbol">${brandMark()}</span><blockquote>“${escapeHtml(BUSINESS.introduction)}”<cite>grandma</cite></blockquote></section>
+    <div class="welcome-extras">
+      <button class="daily-feature" data-start="daily"><span class="daily-pastry">${pastry(challenge.family,{...challenge,state:'golden'})}</span><span><strong>today’s recipe</strong><span>${escapeHtml(challenge.name || challenge.title)}</span></span>${icon('arrow')}</button>
+      <button class="scrapbook-link" data-action="scrapbook">${icon('book')}<span><strong>your baking scrapbook</strong><span>little recipes. lovely memories.</span></span>${icon('arrow')}</button>
+    </div>
+    ${businessLinks('welcome-links')}
+    <footer class="welcome-footer"><p>${escapeHtml(BUSINESS.name)}<br>${escapeHtml(BUSINESS.tagline)}</p><details class="brand-story"><summary>a note from grandma ${icon('heart')}</summary><p>${escapeHtml(BUSINESS.story)}</p></details></footer>
     ${scrapbookOpen ? scrapbookModal() : ''}${shareFallbackUrl ? shareFallbackModal() : ''}
   </main>`;
-  mountVisual('three-welcome', 'counter', null);
-}
-
-function mountVisual(id, visualStation = station, order = selectedOrder()) {
-  threeStage?.destroy?.();
-  const host = document.getElementById(id);
-  const progress = {
-    regulars: profile.regulars?.length || 0,
-    runsCancelled: profile.advertising?.runsCancelled || 0,
-  };
-  threeStage = host ? createBakeryStage(host, { station: visualStation, order, progress, reducedMotion: profile.settings?.reducedMotion || matchMedia('(prefers-reduced-motion: reduce)').matches }) : null;
 }
 
 function startGame(mode) {
@@ -181,7 +164,7 @@ function ticketCard(order) {
     <span class="portrait">${character(customer, order.elapsed > customer.patience * .65 ? 'waiting' : 'neutral')}</span>
     <span><span class="ticket-name"><span>${escapeHtml(customer.name)}</span><span>#${escapeHtml(order.id.slice(-3))}</span></span>
       <span class="ticket-order">${escapeHtml(orderDescription(order))}</span>
-      <span class="ticket-icons">${pastry(order, order.stage === 'baking' ? 'raw' : (order.stage === 'baked' || order.stage === 'decorating' || order.stage === 'ready' ? 'golden' : 'raw'))}${cup(order.drinkPrep || {})}<span class="pill">${cap(order.stage)}</span></span>
+      <span class="ticket-icons">${pastry(order.family,{flavor:order.flavor,topping:order.topping,frosting:order.frosting || 'none',sprinkles:order.topping === 'sprinkles',state:'golden'})}${cup({...order.drink,fill:.8,lid:order.takeaway})}<span class="pill">${cap(order.stage)}</span></span>
       <span class="wait-meter" aria-label="Customer patience ${Math.round(patience * 100)} percent"><span style="width:${pct(patience)}"></span></span>
     </span>
   </button>`;
@@ -198,12 +181,12 @@ function ticketPanel() {
 
 function phoneTicketDrawer() {
   const order = selectedOrder();
-  return `<button class="ticket-drawer-button" data-action="tickets" aria-expanded="${ticketDrawerOpen}"><span>🎟 ${order ? `${customerName(order)} · ${cap(order.stage)}` : 'No active ticket'}</span><span>${activeOrders().length} ticket${activeOrders().length === 1 ? '' : 's'} ▾</span></button>
+  return `<button class="ticket-drawer-button" data-action="tickets" aria-expanded="${ticketDrawerOpen}"><span class="compact-ticket">${icon('book')}<span><strong>${order ? escapeHtml(customerName(order)) : 'Your tickets'}</strong><small>${order ? `${order.quantity} ${cap(order.flavor)} ${cap(order.family)} · ${cap(order.drink.type)}` : 'Take an order to begin'}</small></span></span><span class="drawer-count">${activeOrders().length} ${activeOrders().length === 1 ? 'ticket' : 'tickets'} ${icon('arrow')}</span></button>
   ${ticketDrawerOpen ? `<div class="phone-ticket-overlay" data-action="close-tickets"><div class="drawer" role="dialog" aria-modal="true" aria-label="Order tickets"><div class="drawer-head"><strong>Ticket rail</strong><button class="btn icon-button ghost" data-action="close-tickets" aria-label="Close tickets">${icon('close')}</button></div><div class="ticket-stack">${ticketsContent()}</div></div></div>` : ''}`;
 }
 
 function stationHeading(title, note) {
-  return `<div class="station-heading"><div><p class="eyebrow">${escapeHtml(title)}</p><h2 class="section-title">${escapeHtml(note)}</h2></div>${selectedOrder() ? `<span class="pill">Working on ${escapeHtml(customerName(selectedOrder()))}</span>` : ''}</div>`;
+  return `<div class="station-heading"><div><h1 class="station-title">${handLetter(title)}</h1><p class="station-subtitle">${escapeHtml(note)}</p></div>${selectedOrder() ? `<span class="pill">Working on ${escapeHtml(customerName(selectedOrder()))}</span>` : ''}</div>`;
 }
 
 function emptyStation(message = 'Take an order at the counter to begin.') {
@@ -252,11 +235,11 @@ function renderMixing() {
   const readyIngredients = required.every(id => order.ingredients.includes(id));
   let work = '';
   if (order.stage === 'ingredients') {
-    work = `<div class="recipe-strip" aria-label="Recipe ingredients">${required.map(id => `<span class="recipe-chip ${order.ingredients.includes(id) ? 'done' : ''}">${ingredientIcon(id)}${cap(id)}</span>`).join('')}</div>
+    work = `<div class="ingredient-worktop"><div class="bowl-wrap ${droppedIngredient ? 'ingredient-drop' : ''}">${bowl(0,order.ingredients.length)}${droppedIngredient ? `<span class="falling-ingredient">${ingredientIcon(droppedIngredient)}</span>` : ''}</div><div class="recipe-card"><strong>grandma’s recipe</strong><span>${order.ingredients.filter(id=>required.includes(id)).length} / ${required.length} ingredients added</span></div></div><div class="recipe-strip" aria-label="Recipe ingredients">${required.map(id => `<span class="recipe-chip ${order.ingredients.includes(id) ? 'done' : ''}">${ingredientIcon(id)}${cap(id)}</span>`).join('')}</div>
       <div class="ingredient-shelf">${INGREDIENTS.map(item => `<button class="ingredient-btn ${order.ingredients.includes(item.id) ? 'added' : ''}" data-ingredient="${item.id}">${ingredientIcon(item.id)}${escapeHtml(item.name)}</button>`).join('')}</div>
       <p class="muted">Add the ingredients on Grandma’s recipe card. A wrong scoop is recoverable, but it costs a little.</p>`;
   } else if (order.stage === 'mixing') {
-    work = `<div class="mix-worktop"><div class="bowl-wrap ${order.mixProgress > 0 && order.mixProgress < 1 ? 'mixing' : ''}">${toolIcon('bowl')}<div class="whisk">${toolIcon('whisk')}</div></div><div><h3>Stir until smooth</h3><p>Hold the whisk button, or tap it repeatedly.</p><button id="mix-hold" class="hold-button" style="--hold:${pct(order.mixProgress)}"><span>${Math.round(order.mixProgress * 100)}% mixed</span></button></div></div>`;
+    work = `<div class="mix-worktop"><div class="bowl-wrap ${order.mixProgress > 0 && order.mixProgress < 1 ? 'mixing' : ''}">${bowl(order.mixProgress,order.ingredients.length)}</div><div><h3>Stir until smooth</h3><p>Hold the whisk button, or tap it repeatedly.</p><button id="mix-hold" class="hold-button" style="--hold:${pct(order.mixProgress)}"><span>${Math.round(order.mixProgress * 100)}% mixed</span></button></div></div>`;
   } else if (order.stage === 'portioning') {
     work = `<h3>Portion ${order.quantity} ${RECIPES[order.family].singular}${order.quantity > 1 ? 's' : ''}</h3><p>Tap each marked spot. The targets are generous—Grandma isn’t measuring with a ruler.</p><div class="tray-grid">${Array.from({ length: order.quantity }, (_, i) => `<button class="portion-target ${i < order.portions ? 'filled' : ''}" data-portion="${i}" aria-label="${i < order.portions ? 'Filled' : 'Fill'} tray position ${i + 1}">${i < order.portions ? pastry(order, 'raw') : '+'}</button>`).join('')}</div>`;
   } else {
@@ -280,10 +263,10 @@ function renderOven() {
   const qualityLabel = !order ? '' : order.bakeTime < window.goldenStart ? 'Underbaked' : order.bakeTime <= window.goldenEnd ? 'Golden — take it out!' : 'Getting dark';
   const slotsHtml = Array.from({ length: slots }, (_, i) => {
     const item = baking[i];
-    return `<div class="oven-slot ${item ? 'baking' : ''}">${item ? `<div><div class="bake-pastries">${Array.from({length:item.quantity},()=>pastry(item, item.bakeTime < window.goldenStart ? 'raw' : item.bakeTime <= window.goldenEnd ? 'golden' : 'overbaked')).join('')}</div><small>${escapeHtml(customerName(item))} · ${Math.round(item.bakeTime)}s</small></div>` : '<span>Empty shelf</span>'}</div>`;
+    return `<div class="oven-slot ${item ? 'baking' : ''}">${item ? `<div><div class="bake-pastries">${Array.from({length:item.quantity},()=>pastry(item, item.bakeTime < getBakeWindow(item,profile).goldenStart ? 'raw' : item.bakeTime <= getBakeWindow(item,profile).goldenEnd ? 'golden' : 'overbaked')).join('')}</div><small data-bake-order="${item.id}">${escapeHtml(customerName(item))} · ${Math.round(item.bakeTime)}s</small></div>` : '<span>Empty shelf</span>'}</div>`;
   }).join('');
   return stationShell('Oven', 'Warm, watchful, and wonderfully fragrant', `<div class="oven-unit"><div class="oven-window ${baking.length ? 'hot' : ''}"><div class="oven-shelf">${slotsHtml}</div>${baking.length ? '<div class="steam"><i style="--x:-20px"></i><i style="--x:50px;--delay:.5s"></i><i style="--x:130px;--delay:1s"></i></div>' : ''}</div>
-    <div class="oven-controls"><div><div class="bake-band" aria-label="Baking progress"><span style="--bake:${pct(bakeRatio)}"></span></div><small>${order?.stage === 'baking' ? qualityLabel : 'The golden band is generous.'}</small></div><span class="timer-display">${order?.stage === 'baking' ? `${Math.round(order.bakeTime)}s` : '—'}</span></div>
+    <div class="oven-controls"><div><div class="bake-band" aria-label="Baking progress"><span style="--bake:${pct(bakeRatio)}"></span></div><small class="bake-status">${order?.stage === 'baking' ? qualityLabel : 'The golden band is generous.'}</small></div><span class="timer-display">${order?.stage === 'baking' ? `${Math.round(order.bakeTime)}s` : '—'}</span></div>
     <div class="button-row" style="margin-top:1rem">${selectedCanBake ? `<button class="btn" data-game="start-bake" ${baking.length >= slots ? 'disabled' : ''}>Put tray in oven</button>` : ''}${order?.stage === 'baking' ? '<button class="btn" data-game="remove-bake">Remove selected tray</button>' : ''}${order?.stage === 'baked' ? '<button class="btn secondary" data-station="decorating">Decorate this batch</button>' : ''}${!order ? '<span class="muted">Select a ticket to check its tray.</span>' : ''}</div>
   </div>`);
 }
@@ -300,7 +283,7 @@ function renderDecorating() {
     ${isCupcake ? `<strong>Frosting</strong>${frostings.map((f, i) => `<button class="choice-button ${decor.frosting === f ? 'active' : ''}" data-frosting="${f}"><span class="frosting-swatch" style="--shade:${['#fff','#999','#222'][i % 3]}"></span>${cap(f)}</button>`).join('')}` : '<span class="pill">No frosting needed</span>'}
     ${topping ? `<button class="choice-button ${decor.toppings?.includes(topping) ? 'active' : ''}" data-topping="${topping}">${ingredientIcon(topping)} Add ${cap(topping)}</button>` : '<span class="muted">No topping requested.</span>'}
     <button class="choice-button" data-game="decorate">Pipe a little</button><button class="btn secondary" data-game="finish-decoration">Finish pastry</button>
-  </div><div id="decor-canvas" class="decor-canvas" aria-label="Pastry decorating area. Tap or drag along the guide."><div class="decor-pastry">${pastry(order, 'golden')}</div>${isCupcake ? '<div class="pipe-guide"></div>' : ''}${Array.from({length:Math.round((decor.coverage || 0)*12)},(_,i)=>`<i class="frosting-mark" style="left:${40 + (i%4)*7}%;top:${39 + Math.floor(i/4)*8}%;--frosting:${decor.frosting === 'strawberry' ? '#e7a0a0' : decor.frosting === 'chocolate' ? '#75503e' : '#f6e7c9'}"></i>`).join('')}${Array.from({length:decor.sprinkles || 0},(_,i)=>`<i class="sprinkle-mark" style="left:${36+(i*17)%32}%;top:${36+(i*23)%34}%;--rotate:${(i*37)%150}deg;--sprinkle:${['#bd4b40','#e0a33a','#4f877a','#8e6aaa'][i%4]}"></i>`).join('')}</div></div>
+  </div><div id="decor-canvas" class="decor-canvas" aria-label="Pastry decorating area. Tap or drag along the guide."><div class="decor-pastry">${pastry(order, 'golden')}</div>${isCupcake ? '<div class="pipe-guide"></div>' : ''}${Array.from({length:Math.round((decor.coverage || 0)*12)},(_,i)=>`<i class="frosting-mark" style="left:${40 + (i%4)*7}%;top:${39 + Math.floor(i/4)*8}%;--frosting:${decor.frosting === 'strawberry' ? '#d4d4d4' : decor.frosting === 'chocolate' ? '#777' : '#fff'}"></i>`).join('')}${Array.from({length:decor.sprinkles || 0},(_,i)=>`<i class="sprinkle-mark" style="left:${36+(i*17)%32}%;top:${36+(i*23)%34}%;--rotate:${(i*37)%150}deg;--sprinkle:${['#191919','#777','#444','#aaa'][i%4]}"></i>`).join('')}</div></div>
     <p class="muted">${isCupcake ? `Tap or drag over the pastry to pipe a forgiving swirl${topping ? `, then add ${cap(topping).toLowerCase()}` : ''}.` : 'Give the baked pastry a quick finishing check, then mark it ready.'}</p>
   </div>`);
 }
@@ -333,7 +316,7 @@ function renderStation() {
 function ovenAlerts() {
   const alerts = activeOrders().filter(o => o.stage === 'baking').map(o => {
     const win = getBakeWindow(o, profile);
-    if (o.bakeTime >= win.goldenStart) return `<span class="oven-alert">🔔 ${escapeHtml(customerName(o))}’s tray is ${o.bakeTime <= win.goldenEnd ? 'golden' : 'getting dark'}!</span>`;
+    if (o.bakeTime >= win.goldenStart) return `<button class="oven-alert" data-station="oven">${icon('oven')} ${escapeHtml(customerName(o))}’s tray is ${o.bakeTime <= win.goldenEnd ? 'golden' : 'getting dark'}!</button>`;
     return '';
   }).filter(Boolean);
   return alerts.length ? `<div class="oven-alerts" aria-live="assertive">${alerts.join('')}</div>` : '';
@@ -345,27 +328,26 @@ function renderGame() {
   app.innerHTML = `<main class="game app-shell">
     <header class="topbar">${wordmark()}<span class="day-chip">${session.isDaily ? 'Daily Recipe Challenge' : session.mode === 'quick' ? 'Quick Play' : `Day ${session.day} · ${DAY_TITLES[session.day - 1]}`}</span><span class="pill">${3 - (profile.advertising?.runsCancelled || 0)} flyer runs left</span><span class="money-chip">${icon('coin')} ${profile.coins}</span><div class="top-actions"><button class="btn icon-button" data-action="sound" aria-label="${profile.settings.sound ? 'Mute sound' : 'Turn sound on'}">${icon(profile.settings.sound ? 'sound' : 'muted')}</button><button class="btn icon-button" data-action="pause" aria-label="Pause game">${icon('pause')}</button></div></header>
     ${progressRibbon()}${phoneTicketDrawer()}${ovenAlerts()}
-    <div class="game-layout"><div class="play-column"><div class="station-area"><div id="three-stage" class="three-stage" aria-hidden="true"></div>${renderStation()}</div>${stationNav()}</div>${ticketPanel()}</div>
+    <div class="game-layout"><div class="play-column"><div class="station-area">${renderStation()}</div>${stationNav()}</div>${ticketPanel()}</div>
     ${tutorialStep >= 0 ? tutorialModal() : ''}${settingsOpen ? pauseModal() : ''}
   </main>`;
   bindHoldControls();
   bindDecorCanvas();
-  mountVisual('three-stage', station, selectedOrder());
 }
 
 function stationNav() {
-  const items = [['counter','🏡','Counter'],['mixing','🥣','Mixing'],['oven','♨','Oven'],['decorating','🧁','Decorate'],['drinks','☕','Drinks']];
+  const items = [['counter','counter','Counter'],['mixing','bowl','Mixing'],['oven','oven','Oven'],['decorating','piping','Decorate'],['drinks','cup','Drinks']];
   const alert = activeOrders().some(o => o.stage === 'baking' && o.bakeTime >= getBakeWindow(o, profile).goldenStart);
-  return `<nav class="station-nav" aria-label="Bakery stations">${items.map(([id,emoji,label]) => `<button class="station-tab ${station === id ? 'active' : ''} ${id === 'oven' && alert ? 'alert' : ''}" data-station="${id}" aria-current="${station === id ? 'page' : 'false'}"><span class="tab-icon">${emoji}</span>${label}</button>`).join('')}</nav>`;
+  return `<nav class="station-nav" aria-label="Bakery stations">${items.map(([id,symbol,label]) => `<button class="station-tab ${station === id ? 'active' : ''} ${id === 'oven' && alert ? 'alert' : ''}" data-station="${id}" aria-current="${station === id ? 'page' : 'false'}"><span class="tab-icon">${icon(symbol)}</span>${label.toLowerCase()}</button>`).join('')}</nav>`;
 }
 
 function tutorialModal() {
   const step = TUTORIAL[tutorialStep];
-  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorial-title"><div class="modal-body"><p class="eyebrow">How to play · ${tutorialStep + 1} of ${TUTORIAL.length}</p><h2 id="tutorial-title">${escapeHtml(step.title)}</h2><div class="tutorial-visual">${step.station === 'mixing' ? toolIcon('bowl') : step.station === 'oven' ? toolIcon('tray') : step.station === 'drinks' ? cup({type:'hot-chocolate',fill:.8,extras:['marshmallows']}) : character(tutorialStep ? CUSTOMERS[1] : GRANDMA, 'happy')}</div><p>${escapeHtml(step.text)}</p><div class="step-dots">${TUTORIAL.map((_, i) => `<span class="${i === tutorialStep ? 'active' : ''}"></span>`).join('')}</div><div class="button-row"><button class="btn ghost" data-action="skip-tutorial">Skip</button><button class="btn" data-action="tutorial-next">${tutorialStep === TUTORIAL.length - 1 ? 'Let’s bake' : 'Next'}</button></div></div></section></div>`;
+  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorial-title"><div class="modal-body"><h2 id="tutorial-title">${escapeHtml(step.title)}</h2><p class="tutorial-progress">${tutorialStep + 1} of ${TUTORIAL.length}</p><div class="tutorial-visual">${step.station === 'mixing' ? toolIcon('bowl') : step.station === 'oven' ? toolIcon('tray') : step.station === 'drinks' ? cup({type:'hot-chocolate',fill:.8,extras:['marshmallows']}) : character(tutorialStep ? CUSTOMERS[1] : GRANDMA, 'happy')}</div><p>${escapeHtml(step.text)}</p><div class="step-dots">${TUTORIAL.map((_, i) => `<span class="${i === tutorialStep ? 'active' : ''}"></span>`).join('')}</div><div class="button-row"><button class="btn ghost" data-action="skip-tutorial">Skip</button><button class="btn" data-action="tutorial-next">${tutorialStep === TUTORIAL.length - 1 ? 'Let’s bake' : 'Next'}</button></div></div></section></div>`;
 }
 
 function pauseModal() {
-  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="pause-title"><div class="modal-body"><p class="eyebrow">The bakery is paused</p><h2 id="pause-title">Take a little breather.</h2><p>Orders and ovens are frozen until you return.</p><label class="choice-button"><input type="checkbox" data-setting="sound" ${profile.settings.sound ? 'checked' : ''}> Sound effects</label><label class="choice-button"><input type="checkbox" data-setting="relaxed" ${profile.settings.relaxed ? 'checked' : ''}> Relaxed mode · more patient customers</label><label class="choice-button"><input type="checkbox" data-setting="reducedMotion" ${profile.settings.reducedMotion ? 'checked' : ''}> Reduce motion</label><div class="button-row" style="margin-top:1rem"><button class="btn" data-action="resume">Resume baking</button><button class="btn ghost" data-action="home">Save & return home</button></div></div></section></div>`;
+  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="pause-title"><div class="modal-body"><h2 id="pause-title">${handLetter('a little breather')}</h2><p>Orders and ovens are frozen until you return.</p><label class="choice-button"><input type="checkbox" data-setting="sound" ${profile.settings.sound ? 'checked' : ''}> Sound effects</label><label class="choice-button"><input type="checkbox" data-setting="relaxed" ${profile.settings.relaxed ? 'checked' : ''}> Relaxed mode · more patient customers</label><label class="choice-button"><input type="checkbox" data-setting="reducedMotion" ${profile.settings.reducedMotion ? 'checked' : ''}> Reduce motion</label><div class="button-row" style="margin-top:1rem"><button class="btn" data-action="resume">Resume baking</button><button class="btn ghost" data-action="home">Save & return home</button></div></div></section></div>`;
 }
 
 function renderResults() {
@@ -378,19 +360,19 @@ function renderResults() {
   const offer = activeOffer();
   const happiness = (profile.regulars?.length || 0) >= 4 ? 'happy' : 'neutral';
   const reachedGoal = (profile.regulars?.length || 0) >= 6;
-  app.innerHTML = `<main class="results-screen"><div class="results-wrap"><header class="results-header"><div>${character(GRANDMA, happiness)}</div><div><p class="eyebrow">${session.isDaily ? 'Daily recipe complete' : complete ? (session.mode === 'story' ? 'Neighborhood bakery event' : 'Quick Play complete') : `Day ${session.day} complete`}</p><h1>${complete && session.mode === 'story' && reachedGoal ? 'Grandma has time for tea.' : 'A lovely day’s work.'}</h1><p>${session.isDaily ? `${escapeHtml(session.dailyRecipe.description)} Your best result is saved in this browser.` : complete && session.mode === 'story' ? (reachedGoal ? 'Your care brought six neighbors back, filled the recipe book with memories, and let Grandma put the last flyers away.' : `The neighborhood event was a joy. ${6 - (profile.regulars?.length || 0)} more regular${6 - (profile.regulars?.length || 0) === 1 ? '' : 's'} will help Grandma finish putting the flyers away.`) : 'Every warm welcome makes the bakery feel a little more like home.'}</p></div></header>
-    <section class="receipt"><p class="eyebrow">Bakery receipt</p><h2 class="section-title">${escapeHtml(BUSINESS.name)}</h2><div class="stats-grid"><div class="stat-card"><strong>${stats.customersServed ?? last.length}</strong><span>Customers served</span></div><div class="stat-card"><strong>${Math.round(stats.satisfaction || average(last.map(r => r.total)) || 0)}%</strong><span>Average satisfaction</span></div><div class="stat-card"><strong>${stats.sales ?? sum(last,'payment')} coins</strong><span>Bakery sales</span></div><div class="stat-card"><strong>${stats.tips ?? sum(last,'tip')} coins</strong><span>Tips</span></div><div class="stat-card"><strong>−${stats.costs ?? stats.ingredientCosts ?? 0}</strong><span>Ingredient costs</span></div><div class="stat-card"><strong>${stats.profit ?? ((stats.sales || 0)+(stats.tips || 0)-(stats.costs || 0))}</strong><span>Operating profit</span></div><div class="stat-card"><strong>${profile.advertising?.savings || 0} coins</strong><span>Advertising avoided</span></div><div class="stat-card"><strong>${profile.advertising?.timeSaved || 0} min</strong><span>Grandma’s time saved</span></div></div>
+  app.innerHTML = `<main class="results-screen"><div class="results-wrap"><header class="results-header"><div class="results-grandma">${character(GRANDMA, happiness)}${reachedGoal ? `<span class="grandma-tea">${cup({type:'tea',fill:.8})}</span>` : ''}</div><div><h1>${handLetter(complete && session.mode === 'story' && reachedGoal ? 'time for tea' : 'a lovely day')}</h1><p class="results-status">${session.isDaily ? 'Daily recipe complete' : complete ? (session.mode === 'story' ? 'Neighborhood bakery event' : 'Quick Play complete') : `Day ${session.day} complete`}</p><p>${session.isDaily ? `${escapeHtml(session.dailyRecipe.description)} Your best result is saved in this browser.` : complete && session.mode === 'story' ? (reachedGoal ? 'Your care brought six neighbors back, filled the recipe book with memories, and let Grandma put the last flyers away.' : `The neighborhood event was a joy. ${6 - (profile.regulars?.length || 0)} more regular${6 - (profile.regulars?.length || 0) === 1 ? '' : 's'} will help Grandma finish putting the flyers away.`) : 'Every warm welcome makes the bakery feel a little more like home.'}</p></div></header>
+    <section class="receipt"><h2 class="section-title receipt-title">${escapeHtml(BUSINESS.name)}</h2><div class="stats-grid"><div class="stat-card"><strong>${stats.customersServed ?? last.length}</strong><span>Customers served</span></div><div class="stat-card"><strong>${Math.round(stats.satisfaction || average(last.map(r => r.total)) || 0)}%</strong><span>Average satisfaction</span></div><div class="stat-card"><strong>${stats.sales ?? sum(last,'payment')} coins</strong><span>Bakery sales</span></div><div class="stat-card"><strong>${stats.tips ?? sum(last,'tip')} coins</strong><span>Tips</span></div><div class="stat-card"><strong>−${stats.costs ?? stats.ingredientCosts ?? 0}</strong><span>Ingredient costs</span></div><div class="stat-card"><strong>${stats.profit ?? ((stats.sales || 0)+(stats.tips || 0)-(stats.costs || 0))}</strong><span>Operating profit</span></div><div class="stat-card"><strong>${profile.advertising?.savings || 0} coins</strong><span>Advertising avoided</span></div><div class="stat-card"><strong>${profile.advertising?.timeSaved || 0} min</strong><span>Grandma’s time saved</span></div></div>
       <p><strong>${stats.newRegulars ?? 0}</strong> new regular${(stats.newRegulars ?? 0) === 1 ? '' : 's'} today · <strong>${profile.regulars?.length || 0}/6</strong> story goal</p><div class="score-list">${last.map(resultRow).join('') || '<p class="muted">Your order results will appear here.</p>'}</div>
-      ${milestone ? '<div class="milestone-card"><strong>🎉 Two new regulars!</strong><p>Grandma saved 10 coins and 20 minutes of advertising. This is tracked separately from bakery revenue.</p></div>' : ''}
+      ${milestone ? `<div class="milestone-card"><strong>${icon('heart')} Two new regulars!</strong><p>Grandma saved 10 coins and 20 minutes of advertising. This is tracked separately from bakery revenue.</p></div>` : ''}
     </section>
     ${session.mode === 'story' && !complete ? upgradeShop() : ''}
     ${featured && safeBusinessUrl(featured.url) ? `<div class="offer-card"><strong>Made you hungry?</strong><p>${escapeHtml(featured.name)} is available at the real bakery.</p><a class="btn secondary small" href="${escapeHtml(safeBusinessUrl(featured.url))}" target="_blank" rel="noopener">Try this at the bakery</a></div>` : ''}
-    ${offer ? `<div class="offer-card"><p class="eyebrow">Current bakery offer</p><h3>${escapeHtml(offer.title)}</h3><p>${escapeHtml(offer.description || '')}</p><p><strong>Terms:</strong> ${escapeHtml(offer.terms)} · Expires ${escapeHtml(offer.expires)}</p>${safeBusinessUrl(offer.url) ? `<a class="btn secondary small" href="${escapeHtml(safeBusinessUrl(offer.url))}" target="_blank" rel="noopener">View offer</a>` : ''}</div>` : ''}
+    ${offer ? `<div class="offer-card"><h3>${escapeHtml(offer.title)}</h3><p>${escapeHtml(offer.description || '')}</p><p><strong>Terms:</strong> ${escapeHtml(offer.terms)} · Expires ${escapeHtml(offer.expires)}</p>${safeBusinessUrl(offer.url) ? `<a class="btn secondary small" href="${escapeHtml(safeBusinessUrl(offer.url))}" target="_blank" rel="noopener">View offer</a>` : ''}</div>` : ''}
     <div class="cta-band"><div class="address-block"><strong>${escapeHtml(BUSINESS.name)}</strong>${BUSINESS.address ? `<br>${escapeHtml(BUSINESS.address)}` : ''}${BUSINESS.hours ? `<br>${escapeHtml(BUSINESS.hours)}` : ''}</div>${businessLinks()}<div class="button-row"><button class="btn cream" data-action="share">${icon('share')} Share the game</button>${!complete && session.mode === 'story' ? '<button class="btn" data-action="next-day">Next day</button>' : '<button class="btn" data-action="play-again">Play again</button>'}</div></div>
     <p class="muted" style="text-align:center">Game regulars and stamps are locally saved achievements. Real purchases and rewards require verification from the bakery.</p>
     ${scrapbookOpen ? scrapbookModal() : ''}${shareFallbackUrl ? shareFallbackModal() : ''}
   </div></main>`;
-  if (milestone) celebration();
+  if (milestone && !celebratedMilestones.has(milestone.id)) { celebratedMilestones.add(milestone.id); celebration(); }
   const completionKey = `${session.id}:${session.day}`;
   if (!trackedCompletions.has(completionKey)) { trackedCompletions.add(completionKey); trackEvent('completion', { mode: session.mode, day: session.day }); }
 }
@@ -406,36 +388,56 @@ function resultRow(result) {
 }
 
 function upgradeShop() {
-  return `<section style="margin-top:1.5rem"><p class="eyebrow">Spend bakery coins</p><h2 class="section-title">A little help for tomorrow</h2><div class="upgrade-grid">${UPGRADES.filter(u => u.unlockDay <= session.day + 1).map(u => `<article class="upgrade-card"><div><h3>${escapeHtml(u.name)}</h3><p>${escapeHtml(u.description)}</p></div>${profile.upgrades?.[u.id] ? '<span class="pill">Owned</span>' : `<button class="btn small secondary" data-upgrade="${u.id}" ${profile.coins < u.cost ? 'disabled' : ''}>${u.cost} coins</button>`}</article>`).join('')}</div></section>`;
+  return `<section style="margin-top:1.5rem"><h2 class="section-title">${handLetter('a little help')}</h2><div class="upgrade-grid">${UPGRADES.filter(u => u.unlockDay <= session.day + 1).map(u => `<article class="upgrade-card"><div><h3>${escapeHtml(u.name)}</h3><p>${escapeHtml(u.description)}</p></div>${profile.upgrades?.[u.id] ? '<span class="pill">Owned</span>' : `<button class="btn small secondary" data-upgrade="${u.id}" ${profile.coins < u.cost ? 'disabled' : ''}>${u.cost} coins</button>`}</article>`).join('')}</div></section>`;
 }
 
 function scrapbookModal() {
   const discovered = Array.isArray(profile.scrapbook) ? profile.scrapbook : [];
-  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="scrap-title"><div class="modal-body"><p class="eyebrow">Saved on this device</p><h2 id="scrap-title">Grandma’s baking scrapbook</h2><p>Recipes, personal bests, and game stamps live in this browser. They are keepsakes from play, not purchase rewards.</p><div class="scrapbook-grid">${Object.values(RECIPES).map(recipe => { const entries = discovered.filter(item => item.family === recipe.id); const open = recipe.unlockDay <= (profile.unlockedDay || 1) || entries.length; const best = entries.length ? Math.max(...entries.map(item => item.score || 0)) : 0; return `<div class="scrap-card">${pastry({family:recipe.id, flavor:'vanilla'}, open ? 'golden' : 'raw')}<strong>${open ? escapeHtml(recipe.name) : 'Recipe tucked away'}</strong><p class="muted">${open ? escapeHtml(recipe.description) : `Unlocks in Story Day ${recipe.unlockDay}`}</p><span class="pill">Best ${best || '—'}${best ? '%' : ''}</span></div>`; }).join('')}</div><div class="button-row"><button class="btn" data-action="close-scrapbook">Close scrapbook</button></div></div></section></div>`;
+  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="scrap-title"><div class="modal-body"><h2 id="scrap-title">${handLetter('recipe book')}</h2><p>Recipes, personal bests, and game stamps live in this browser. They are keepsakes from play, not purchase rewards.</p><div class="scrapbook-grid">${Object.values(RECIPES).map(recipe => { const entries = discovered.filter(item => item.family === recipe.id); const open = recipe.unlockDay <= (profile.unlockedDay || 1) || entries.length; const best = entries.length ? Math.max(...entries.map(item => item.score || 0)) : 0; return `<div class="scrap-card">${pastry({family:recipe.id, flavor:'vanilla'}, open ? 'golden' : 'raw')}<strong>${open ? escapeHtml(recipe.name) : 'Recipe tucked away'}</strong><p class="muted">${open ? escapeHtml(recipe.description) : `Unlocks in Story Day ${recipe.unlockDay}`}</p><span class="pill">Best ${best || '—'}${best ? '%' : ''}</span></div>`; }).join('')}</div><details class="pantry-artbook"><summary>Grandma’s illustrated pantry</summary><figure>${suppliedArt('recipe-sheet', 'Grandma’s supplied sketches: croissant, cookie, muffins, cupcakes, flour, egg, chocolate, raisins, butter, milk, blueberries, tea cup, honey and cocoa')}<figcaption>The little ingredients behind our favorite bakes.</figcaption></figure></details><div class="button-row"><button class="btn" data-action="close-scrapbook">Close scrapbook</button></div></div></section></div>`;
 }
 
 function shareFallbackModal() {
-  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="share-title"><div class="modal-body"><p class="eyebrow">Share the bakery</p><h2 id="share-title">Copy this game link</h2><p>Select the link below and copy it wherever you like.</p><input value="${escapeHtml(shareFallbackUrl)}" readonly aria-label="Game link" style="width:100%;min-height:48px;padding:.7rem;border:2px solid var(--line);border-radius:12px"><div class="button-row" style="margin-top:1rem"><button class="btn" data-action="close-share">Done</button></div></div></section></div>`;
+  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="share-title"><div class="modal-body"><h2 id="share-title">Copy this game link</h2><p>Select the link below and copy it wherever you like.</p><input value="${escapeHtml(shareFallbackUrl)}" readonly aria-label="Game link" style="width:100%;min-height:48px;padding:.7rem;border:2px solid var(--line);border-radius:12px"><div class="button-row" style="margin-top:1rem"><button class="btn" data-action="close-share">Done</button></div></div></section></div>`;
 }
 
 function doAction(type, payload = {}) {
   if (!session) return;
+  const servedOrder = type === 'serve' ? selectedOrder() : null;
   const result = dispatch(session, profile, { type, ...payload });
+  droppedIngredient = type === 'add-ingredient' && result.ok ? payload.ingredient : '';
   if (!result?.ok && result?.message) showToast(result.message);
   else if (type === 'serve' && result?.score) showToast(`${result.message} · ${result.score.payment} coins + ${result.score.tip} tip`);
   else if (result?.message) announce(result.message);
   if (type === 'add-ingredient') sound('mix');
   if (type === 'fill-drink') sound('pour');
   if (type === 'remove-bake') sound('ding');
-  if (type === 'serve') { sound('payment'); rewards(); }
+  if (type === 'serve' && result.ok) { sound('payment'); rewards(servedOrder); }
   saveGame(profile, session);
   render();
 }
 
 function render() {
   if (heldTimer) { clearInterval(heldTimer); heldTimer = 0; }
-  threeStage?.destroy?.(); threeStage = null;
+  const hadDialog = !!app.querySelector('[aria-modal="true"]');
+  const focus = document.activeElement;
+  const focusId = focus?.id;
+  const focusKeys = ['data-action','data-start','data-station','data-ingredient','data-portion','data-drink','data-frosting','data-game'];
+  const focusKey = focusKeys.find(key=>focus?.hasAttribute?.(key));
+  const focusValue = focusKey ? focus.getAttribute(focusKey) : null;
+  document.documentElement.classList.toggle('reduce-motion', !!profile.settings?.reducedMotion);
+  document.documentElement.classList.toggle('game-paused', document.hidden || (screen === 'game' && !!session?.paused));
   if (screen === 'welcome') renderWelcome(); else renderGame();
+  const dialog = app.querySelector('[aria-modal="true"]');
+  const focusSelector = focusKey ? `[${focusKey}="${CSS.escape(focusValue)}"]` : null;
+  if (dialog) {
+    if (!hadDialog) modalFocusReturn = focusSelector || (focusId ? `#${CSS.escape(focusId)}` : '');
+    const remembered = focusSelector ? dialog.querySelector(focusSelector) : focusId ? dialog.querySelector(`#${CSS.escape(focusId)}`) : null;
+    (remembered || dialog.querySelector('button:not(:disabled),input,a[href]'))?.focus({preventScroll:true});
+  } else if (hadDialog && modalFocusReturn) {
+    (app.querySelector(modalFocusReturn) || app.querySelector('[data-game="take-order"]'))?.focus({preventScroll:true});
+    modalFocusReturn = '';
+  } else if (focusSelector) app.querySelector(focusSelector)?.focus({preventScroll:true});
+  else if (focusId) document.getElementById(focusId)?.focus({preventScroll:true});
 }
 
 function refreshLiveIndicators() {
@@ -446,6 +448,10 @@ function refreshLiveIndicators() {
     if (waitBar) waitBar.style.width = pct(patience);
   }
   const order = selectedOrder();
+  document.querySelectorAll('[data-bake-order]').forEach(el => {
+    const item = activeOrders().find(o=>o.id === el.dataset.bakeOrder);
+    if (item) el.textContent = `${customerName(item)} · ${Math.round(item.bakeTime)}s`;
+  });
   if (station === 'oven' && order?.stage === 'baking') {
     const window = getBakeWindow(order, profile);
     const max = Math.max(window.goldenEnd + 7, 25);
@@ -453,6 +459,8 @@ function refreshLiveIndicators() {
     const clock = document.querySelector('.timer-display');
     if (needle) needle.style.setProperty('--bake', pct(Math.min(1, order.bakeTime / max)));
     if (clock) clock.textContent = `${Math.round(order.bakeTime)}s`;
+    const status = document.querySelector('.bake-status');
+    if (status) status.textContent = order.bakeTime < window.goldenStart ? `Golden in ${Math.ceil(window.goldenStart-order.bakeTime)}s` : order.bakeTime <= window.goldenEnd ? 'Golden — take it out!' : 'Overbaked — you can remake it';
   }
 }
 
@@ -468,12 +476,10 @@ function bindHoldControls() {
       saveGame(profile, session);
       const order = selectedOrder();
       if (action === 'mix') {
-        threeStage?.react('mix');
         el.style.setProperty('--hold', pct(order?.mixProgress || 0));
         el.querySelector('span').textContent = `${Math.round((order?.mixProgress || 0) * 100)}% mixed`;
         document.querySelector('.bowl-wrap')?.classList.add('mixing');
       } else {
-        threeStage?.updateDrink(order?.drinkPrep?.fill || 0);
         el.style.setProperty('--hold', pct((order?.drinkPrep?.fill || 0) / DRINK_FILL_TARGET));
         el.querySelector('span').textContent = `Hold to pour · ${Math.round((order?.drinkPrep?.fill || 0) * 100)}%`;
         const cupSvg = document.querySelector('.cup-stage svg');
@@ -487,8 +493,8 @@ function bindHoldControls() {
     el.addEventListener('click', event => { if (event.detail === 0) { event.preventDefault(); step(); } });
     el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); step(); } });
   };
-  bind('#mix-hold', 'mix', profile.upgrades?.['faster-mixing'] ? .2 : .14, 'mix');
-  bind('#drink-hold', 'fill-drink', profile.upgrades?.['faster-drinks'] ? .16 : .11, 'pour');
+  bind('#mix-hold', 'mix', .14, 'mix');
+  bind('#drink-hold', 'fill-drink', .03, 'pour');
 }
 
 function bindDecorCanvas() {
@@ -500,7 +506,12 @@ function bindDecorCanvas() {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
-    dispatch(session, profile, { type: 'decorate', amount: .08, x, y });
+    const pastryRect = canvas.querySelector('.decor-pastry').getBoundingClientRect();
+    if (e.clientX < pastryRect.left || e.clientX > pastryRect.right || e.clientY < pastryRect.top || e.clientY > pastryRect.bottom) return;
+    const order = selectedOrder();
+    if (order?.decoration.toppings.includes('sprinkles')) dispatch(session,profile,{type:'topping',topping:'sprinkles',x,y});
+    const result = dispatch(session, profile, { type: 'decorate', amount: .08, x, y });
+    if (!result.ok || canvas.querySelectorAll('.frosting-mark').length >= 24) return;
     const mark = document.createElement('i');
     mark.className = 'frosting-mark'; mark.style.left = `${x*100}%`; mark.style.top = `${y*100}%`;
     canvas.append(mark);
@@ -508,7 +519,7 @@ function bindDecorCanvas() {
   canvas.addEventListener('pointerdown', e => { drawing = true; canvas.setPointerCapture(e.pointerId); draw(e); });
   canvas.addEventListener('pointermove', draw);
   canvas.addEventListener('pointerup', () => { drawing = false; saveGame(profile, session); render(); });
-  canvas.addEventListener('click', draw);
+  canvas.addEventListener('pointercancel', () => { drawing = false; saveGame(profile,session); render(); });
 }
 
 function sound(name) {
@@ -530,9 +541,10 @@ function showToast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => node.remove(), 2400); announce(message);
 }
 
-function rewards() {
+function rewards(order) {
   const layer = document.createElement('div'); layer.className = 'reward-layer';
-  layer.innerHTML = Array.from({length: profile.settings?.reducedMotion ? 2 : 7}, (_, i) => `<i class="float-reward" style="--x:${42 + i*3}%">${i%2 ? '♥' : '★'}</i>`).join('');
+  layer.setAttribute('aria-hidden','true');
+  layer.innerHTML = `${order ? `<span class="service-moment">${character(customerById(order.customerId),'happy')}<span class="served-package ${order.takeaway ? 'box-closing' : ''}">${servingContainer(order.takeaway ? 'box' : 'plate')}</span></span><span class="payment-coin">${icon('coin')}</span>` : ''}` + Array.from({length: profile.settings?.reducedMotion ? 2 : 7}, (_, i) => `<i class="float-reward" style="--x:${42 + i*3}%">${icon(i%2 ? 'heart' : 'star')}</i>`).join('');
   document.body.append(layer); setTimeout(() => layer.remove(), 1600);
 }
 
@@ -555,12 +567,13 @@ async function shareGame() {
 }
 
 app.addEventListener('click', event => {
+  if (event.target.classList.contains('phone-ticket-overlay')) { ticketDrawerOpen = false; render(); return; }
   const target = event.target.closest('button, a');
   if (!target) return;
   if (target.dataset.track) trackEvent(target.dataset.track, { location: screen });
   if (target.dataset.start) return startGame(target.dataset.start);
   if (target.dataset.station) { station = target.dataset.station; render(); return; }
-  if (target.dataset.selectOrder) { doAction('select-order', { orderId: target.dataset.selectOrder }); ticketDrawerOpen = false; return; }
+  if (target.dataset.selectOrder) { ticketDrawerOpen = false; doAction('select-order', { orderId: target.dataset.selectOrder }); return; }
   if (target.dataset.ingredient) return doAction('add-ingredient', { ingredient: target.dataset.ingredient });
   if (target.dataset.portion !== undefined) return doAction('portion', { index: Number(target.dataset.portion) });
   if (target.dataset.frosting) return doAction('frosting', { flavor: target.dataset.frosting });
@@ -598,6 +611,7 @@ app.addEventListener('change', event => {
 });
 
 document.addEventListener('visibilitychange', () => {
+  document.documentElement.classList.toggle('game-paused', document.hidden || settingsOpen);
   if (!session || session.phase !== 'playing') return;
   if (document.hidden) dispatch(session, profile, { type: 'pause' });
   else if (!settingsOpen) { dispatch(session, profile, { type: 'resume' }); lastTick = performance.now(); }
@@ -605,13 +619,21 @@ document.addEventListener('visibilitychange', () => {
 });
 
 window.addEventListener('keydown', event => {
+  const dialog = app.querySelector('[aria-modal="true"]');
+  if (dialog && event.key === 'Tab') {
+    const nodes = [...dialog.querySelectorAll('button:not(:disabled),input,a[href]')];
+    const first = nodes[0], last = nodes.at(-1);
+    if (!dialog.contains(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first)?.focus(); }
+    else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  }
   if (event.key === 'Escape' && session && screen === 'game') {
     settingsOpen = !settingsOpen;
     dispatch(session, profile, { type: settingsOpen ? 'pause' : 'resume' });
     render();
   }
   const number = Number(event.key);
-  if (screen === 'game' && number >= 1 && number <= 5 && !settingsOpen) {
+  if (screen === 'game' && number >= 1 && number <= 5 && !settingsOpen && !dialog) {
     station = ['counter','mixing','oven','decorating','drinks'][number - 1]; render();
   }
 });

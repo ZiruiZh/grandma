@@ -1,28 +1,25 @@
 # Grandma’s Bakeria
 
-An original browser game about helping Grandma grow a bakery through care, good pastries, and happy returning neighbors. The final visual direction is a mobile-first, black-and-white sketchbook: irregular outlines, hand-drawn shapes, system handwriting fonts, and a procedural Three.js/WebGL bakery.
+An original browser game about helping Grandma grow a bakery through care, good pastries, and happy returning neighbors. The mobile-first white-and-ink interface follows the HEYTEA reference (https://www.heytea.com/). Food and ingredient drawings use the supplied original PNGs without recoloring or shading. Characters use static viewport crops of a direct capture of the supplied Goodnotes page. Headings use reusable SVG lettering; controls use local system fonts.
 
-Three.js is the only browser runtime library. Every visual is created with geometry, HTML, CSS, inline SVG, or procedural animation. There are no downloaded images, textures, models, fonts, videos, icon packs, sprite sheets, or audio files.
+Every visual is created with reusable HTML, CSS, inline SVG, or procedural animation. There are no downloaded images, textures, models, fonts, videos, icon packs, sprite sheets, or audio files. The browser has **zero runtime dependencies**.
 
 ## Run locally
 
-Requires Node.js 18 or later. Install the JavaScript dependency, then start the local server:
+Requires Node.js 18 or later:
 
 ```sh
-npm ci
 npm run dev
 ```
 
-Open <http://localhost:5173>. Use `PORT=8080 npm run dev` to choose a different port. The development server is intended for local preview.
+Open <http://localhost:5173>. Use `PORT=8080 npm run dev` to choose a different port.
 
 ```sh
 npm test
 npm run build
 ```
 
-The build creates `dist/`, including `three.module.js`, its `three.core.js` dependency, and the Three.js license. Deploy the contents of that directory at the root of a static web host; no CDN, API, paid service, or backend is required. For a subdirectory deployment, adjust the root-relative script, stylesheet, and import-map paths in `index.html`. Serve over HTTP or HTTPS rather than opening `index.html` with a `file:` URL. HTTPS is recommended for native sharing and clipboard support.
-
-WebGL renders the bakery scene; HTML controls, text, and the game engine remain separate from it. The scene is constructed in code, with a capped pixel ratio and disposable geometry/materials. On devices without a usable WebGL context, the game keeps its HTML/SVG controls rather than requiring a downloaded scene or model.
+The build creates `dist/` containing just `index.html` and `src/`. Deploy its contents to a static web host. No CDN, API, paid service, or backend is required. For a subdirectory deployment, adjust the root-relative script and stylesheet paths in `index.html`. Serve over HTTP or HTTPS; HTTPS enables native sharing and clipboard support where the browser permits them.
 
 ## Play
 
@@ -54,7 +51,7 @@ The configuration supports the bakery name and palette tokens, its short story, 
 | Field | Set it to |
 | --- | --- |
 | `name`, `tagline`, `story`, `introduction` | The bakery’s approved branding and introductory copy |
-| `colors` | Owner palette tokens; use black, white, and gray values to preserve the sketchbook appearance |
+| `colors` | Owner palette tokens; use black, white, and gray values to preserve the HEYTEA-style monochrome appearance |
 | `logo` | An optional owner-supplied logo; leave empty to use the text wordmark |
 | `menuUrl`, `orderUrl`, `visitUrl` | Absolute HTTP(S) URLs for the menu, ordering service, and visit/directions page |
 | `gameUrl` | The published game’s absolute URL for sharing; leave empty to share the current page |
@@ -80,16 +77,15 @@ The game is designed to introduce the bakery and its products, encourage repeat 
 - `src/data.js` — recipes, customers, story scheduling, dialogue, and upgrades.
 - `src/business-config.js` — optional real bakery configuration.
 - `src/art.js` — reusable vector characters, pastries, tools, cups, and icons.
-- `src/scene3d.js` — procedural Three.js/WebGL bakery, outlined geometry, station props, camera, animation, and renderer cleanup.
-- `src/styles.css` — mobile-first monochrome interface, irregular sketch outlines, responsive layouts, and procedural effects.
+- `src/styles.css` — mobile-first monochrome interface, responsive layouts, station work surfaces, and procedural effects.
 - `tests/engine.test.js` — deterministic game-rule regression tests.
 - `tests/business-config.test.js` — business-link, offer-expiry, and analytics boundary tests.
 - `ASSET_MANIFEST.md` — complete reusable asset inventory.
 - `REQUIREMENTS_CHECKLIST.md` — implementation map, acceptance walkthrough, and verification evidence.
-- `server.mjs` / `build.mjs` — Node development server and static build that copies the local Three.js runtime.
+- `server.mjs` / `build.mjs` — Node development server and dependency-free static build.
 
 ## Validation
 
 Run `npm test` after changing recipes or rules. The deterministic tests cover complete orders, ticket isolation, oven capacity and pause behavior, recoverable remakes, scoring, loyalty and advertising bookkeeping, upgrades, word-of-mouth referrals, the five-day return schedule, saving/resuming, safe business links, and public offers.
 
-After a visual change, check narrow portrait phones, phone landscape, tablets, and desktop; test keyboard activation, pause/resume, hidden-tab pause, sound off, and reduced motion. Verify the built `dist/` separately: Three.js module imports must resolve without the development `node_modules` directory, and the scene must show the same active ticket and station as the controls. Browser checks still pending in this environment are marked explicitly in `REQUIREMENTS_CHECKLIST.md`.
+After a visual change, inspect portrait phones, landscape phones, tablets, and desktop. Test a complete pastry-and-drink order, keyboard mixing/pouring, the ticket drawer, pause, sound, and reduced motion. Serve `dist/` separately and check for missing modules. See `REQUIREMENTS_CHECKLIST.md` for the latest evidence and remaining device-specific checks.

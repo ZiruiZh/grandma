@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-02T23:50:35.235Z",
+  "title": "Design System: Grandma’s Bakeria",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Bakery Ink",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Open Paper",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "grey": {
+        "role": "neutral",
+        "displayName": "Quiet Gray",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Fine Rule",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "secondary-rule": {
+        "role": "neutral",
+        "displayName": "Secondary Rule",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "state-light": {
+        "role": "neutral",
+        "displayName": "Raw White",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "state-dark": {
+        "role": "neutral",
+        "displayName": "Overbaked Gray",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Title",
+        "purpose": "Plain section headings; original SVG lettering handles display."
+      },
+      "headline": {
+        "displayName": "Task Headline",
+        "purpose": "Supporting task headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Baseline readable text."
+      },
+      "label": {
+        "displayName": "Action Label",
+        "purpose": "Underlined game actions."
+      },
+      "navigation": {
+        "displayName": "Navigation",
+        "purpose": "Small regular links with wide spacing."
+      },
+      "supporting": {
+        "displayName": "Supporting Copy",
+        "purpose": "Quiet contextual detail."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "customer-enter",
+        "value": "customerEnter .5s cubic-bezier(.16,1,.3,1) both",
+        "purpose": "Short entrance from a slight left offset."
+      },
+      {
+        "name": "ticket-reveal",
+        "value": "ticketOpen .3s ease-out both",
+        "purpose": "Clip reveal when a ticket first appears."
+      },
+      {
+        "name": "ingredient-drop",
+        "value": "ingredientFall .55s cubic-bezier(.4,0,.8,1) both",
+        "purpose": "A bounded ingredient drop into the bowl."
+      },
+      {
+        "name": "whisk-stir",
+        "value": "whiskStir .5s ease-in-out infinite alternate",
+        "purpose": "Small whisk rotation during mixing."
+      },
+      {
+        "name": "pastry-rise",
+        "value": "doughRise 2s ease-in-out infinite alternate",
+        "purpose": "A gentle 1.035 scale during baking."
+      },
+      {
+        "name": "cup-steam",
+        "value": "steamRise 2s ease-in-out infinite",
+        "purpose": "Slight drift and opacity change for steam."
+      },
+      {
+        "name": "reward",
+        "value": "floatReward 1.2s ease-out both",
+        "purpose": "Bounded reward movement after service."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation:none!important; transition:none!important; scroll-behavior:auto!important;",
+        "purpose": "Both media preference and in-game preference remove motion; falling ingredient is hidden."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tablet",
+        "value": "700px"
+      },
+      {
+        "name": "desktop",
+        "value": "1080px"
+      },
+      {
+        "name": "compact-phone",
+        "value": "max-width:360px"
+      },
+      {
+        "name": "short-landscape",
+        "value": "max-height:550px and orientation:landscape"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A direct ink-underlined game action.",
+      "html": "<button class=\"ds-btn-primary\">Greet &amp; take order</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:48px; padding:10px 5px; border:0; border-bottom:2px solid var(--ink, #080808); border-radius:0; color:var(--ink, #080808); background:transparent; font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-weight:500; font-size:13px; line-height:1.7; letter-spacing:.065em; cursor:pointer; } .ds-btn-primary:hover { opacity:.6; } .ds-btn-primary:disabled { opacity:.35; cursor:default; } .ds-btn-primary:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; } .ds-btn-primary .ds-icon { width:22px; height:22px; }"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A supporting action with a lighter rule.",
+      "html": "<button class=\"ds-btn-secondary\">Go to counter</button>",
+      "css": ".ds-btn-secondary { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:48px; padding:10px 5px; border:0; border-bottom:2px solid var(--ink, #080808); border-radius:0; color:var(--ink, #080808); background:transparent; font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-weight:500; font-size:13px; line-height:1.7; letter-spacing:.065em; cursor:pointer; } .ds-btn-secondary:hover { opacity:.6; } .ds-btn-secondary:disabled { opacity:.35; cursor:default; } .ds-btn-secondary:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; } .ds-btn-secondary .ds-icon { width:22px; height:22px; } .ds-btn-secondary { border-bottom:1px solid #999; }"
+    },
+    {
+      "name": "Station Navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Five drawing-and-label actions with a short ink active mark.",
+      "html": "<nav class=\"ds-station-nav\" aria-label=\"Bakery stations\"><button class=\"ds-station-tab\"><span class=\"ds-tab-icon\"><svg class=\"ds-icon ds-icon-counter\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 12h20v4H2Zm2 4v6m16-6v6M5 12V6h10v6M7 6V2h6v4m4 6V9h4v3\"/></svg></span>counter</button><button class=\"ds-station-tab ds-active\" aria-current=\"page\"><span class=\"ds-tab-icon\"><svg class=\"ds-icon ds-icon-bowl\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 10h20c-1 8-4 11-10 11S3 18 2 10ZM7 5l10 5m-3-9 4 9\"/></svg></span>mixing</button><button class=\"ds-station-tab\"><span class=\"ds-tab-icon\"><svg class=\"ds-icon ds-icon-oven\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"2\" width=\"18\" height=\"20\" rx=\"3\"/><path d=\"M3 8h18M7 5h1m5 0h1m4 0h.1\"/><rect x=\"6\" y=\"11\" width=\"12\" height=\"8\" rx=\"1\"/></svg></span>oven</button><button class=\"ds-station-tab\"><span class=\"ds-tab-icon\"><svg class=\"ds-icon ds-icon-piping\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m13 3 8 8-12 9-5-5Z\"/><path d=\"m4 15 5 5-7 2Zm9-12 2-2 8 8-2 2\"/></svg></span>decorate</button><button class=\"ds-station-tab\"><span class=\"ds-tab-icon\"><svg class=\"ds-icon ds-icon-cup\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 8h14v8a6 6 0 0 1-12 0L3 8ZM17 9h3c5 0 4 7-3 7M6 3v2m5-3v3M2 22h18\"/></svg></span>drinks</button></nav>",
+      "css": ".ds-station-nav { display:grid; grid-template-columns:repeat(5,1fr); padding:12px 14px; border-top:1px solid var(--line, #e6e6e6); background:var(--paper, #fff); } .ds-station-tab { min-width:0; min-height:55px; padding:6px 2px; border:0; border-radius:0; background:none; color:var(--grey, #666); font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-size:11px; line-height:1.7; letter-spacing:.045em; cursor:pointer; } .ds-tab-icon { display:flex; justify-content:center; margin-bottom:8px; } .ds-tab-icon .ds-icon { width:23px; height:23px; stroke-width:1.65; } .ds-station-tab.ds-active { color:var(--ink, #080808); } .ds-station-tab.ds-active::after { content:''; display:block; width:20px; height:2px; margin:6px auto 0; background:var(--ink, #080808); transform:rotate(-2deg); } .ds-station-tab:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; }"
+    },
+    {
+      "name": "Share Field",
+      "kind": "input",
+      "refersTo": "field-share",
+      "description": "The observed read-only fallback for copying a game URL.",
+      "html": "<input class=\"ds-share-field\" value=\"https://example.com/bakeria\" readonly aria-label=\"Game link\">",
+      "css": ".ds-share-field { width:100%; min-height:48px; padding:.7rem; border:2px solid var(--line, #e6e6e6); border-radius:12px; color:var(--ink, #080808); font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-size:14px; line-height:1.7; letter-spacing:.025em; } .ds-share-field:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; }"
+    },
+    {
+      "name": "Recipe Ingredient",
+      "kind": "chip",
+      "refersTo": "recipe-chip",
+      "description": "Inline required ingredient with an explicit completion check.",
+      "html": "<span class=\"ds-recipe-chip ds-done\"><svg class=\"ds-icon ds-icon-flour\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 3h12l-1 5 3 13H4L7 8Zm1 5h10m-5 4v6m-3-4 3 2 3-2\"/></svg>Flour</span>",
+      "css": ".ds-recipe-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 0; font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-size:10px; line-height:1.7; letter-spacing:.03em; color:var(--ink, #080808); } .ds-recipe-chip .ds-icon { width:18px; height:18px; stroke-width:1.5; } .ds-recipe-chip.ds-done { color:var(--grey, #666); } .ds-recipe-chip.ds-done::after { content:''; width:7px; height:4px; border-bottom:1.5px solid var(--ink, #080808); border-left:1.5px solid var(--ink, #080808); transform:rotate(-45deg); margin-left:2px; }"
+    },
+    {
+      "name": "Choice Row",
+      "kind": "button",
+      "refersTo": "choice",
+      "description": "A light rule at rest and heavier ink rule when selected.",
+      "html": "<button class=\"ds-choice ds-active\" aria-pressed=\"true\">House coffee</button>",
+      "css": ".ds-choice { display:flex; align-items:center; gap:10px; min-height:48px; padding:9px 7px; border:0; border-bottom:1px solid var(--line, #e6e6e6); border-radius:0; background:none; color:var(--ink, #080808); font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-size:11px; font-weight:400; line-height:1.7; letter-spacing:.04em; text-align:left; cursor:pointer; } .ds-choice:hover { border-bottom-color:var(--ink, #080808); } .ds-choice.ds-active { border-bottom:2px solid var(--ink, #080808); } .ds-choice:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; }"
+    },
+    {
+      "name": "Floating Ingredient",
+      "kind": "button",
+      "refersTo": "ingredient",
+      "description": "An original line drawing above its label, with an added check.",
+      "html": "<button class=\"ds-ingredient ds-added\" aria-pressed=\"true\"><svg class=\"ds-icon ds-icon-egg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"1\" height=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 15C20 4 12-2 6 6c-7 10-1 18 7 16 4 0 7-3 7-7Z\"/></svg>Egg</button>",
+      "css": ".ds-ingredient { position:relative; min-width:76px; min-height:76px; padding:8px 0; border:0; border-radius:0; background:none; color:var(--ink, #080808); font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-size:11px; font-weight:400; line-height:1.5; letter-spacing:.015em; cursor:pointer; } .ds-ingredient .ds-icon { display:block; width:33px; height:33px; margin:0 auto 12px; stroke-width:1.65; } .ds-ingredient:hover .ds-icon { transform:rotate(-5deg); } .ds-ingredient.ds-added::after { content:''; position:absolute; top:5px; right:7px; width:8px; height:5px; border-bottom:2px solid var(--ink, #080808); border-left:2px solid var(--ink, #080808); transform:rotate(-45deg); } .ds-ingredient:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; }"
+    },
+    {
+      "name": "Order Ticket",
+      "kind": "card",
+      "refersTo": "ticket",
+      "description": "An open order row with portrait, food drawings, and a patience meter.",
+      "html": "<button class=\"ds-ticket ds-active\" aria-label=\"Select Mr. Maple’s order\"><span class=\"ds-portrait\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 240\" class=\"ds-art ds-character ds-character-maple\" role=\"img\" aria-label=\"maple, neutral\" ><g stroke=\"#080808\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    <g fill=\"#080808\"><path d=\"M128 37q44 15 30 63l-31 29-20-31 14-12Z\"/></g>\n    <path d=\"M76 47q-5 25-26 42l-13 8 17 9-12 8q3 11 22 12l18 19 29-10-4-27q21 1 26-21-8-9-15-7L98 57Z\" fill=\"white\"/>\n    <path d=\"M59 76l11 4\" fill=\"none\" stroke-width=\"4.8\"/>\n    <path d=\"M80 143q-10 22-22 36l-12-23-17 9 33 53 25-25m-7-48q20 7 35-9l14 99M84 194l-7 42\" fill=\"white\"/>\n    <path d=\"m5 144 30 3 8 28-31-3Z\" fill=\"white\"/><path d=\"m14 158 9 8 7-5\" fill=\"none\" stroke-width=\"2\"/>\n    \n    <path d=\"M57 71q15-4 18 10-2 15-17 8-8-5-1-18Zm17 9 24 1\" fill=\"none\" stroke-width=\"2.5\"/>\n    <path d=\"M46 113q10-11 21 2-11 7-21-2Z\" fill=\"black\" stroke-width=\"2\"/>\n    \n    \n    \n    \n  </g></svg></span><span><span class=\"ds-ticket-name\"><span>Mr. Maple</span><span>#001</span></span><span class=\"ds-ticket-order\">1 plain cookie, plus tea. For here, please!</span><span class=\"ds-ticket-icons\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 160 145\" class=\"ds-art ds-pastry ds-pastry-cookie ds-pastry-golden\" role=\"img\" aria-label=\"golden vanilla cookie\" ><g stroke=\"#080808\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M24 76c-2-32 25-51 57-50 33 0 58 20 55 51-2 28-24 45-57 45S26 104 24 76Z\" fill=\"#d1d1d1\"/><path d=\"m38 74 5-13m63 40 9-7\" fill=\"none\" stroke-width=\"2\"/><circle cx=\"58\" cy=\"54\" r=\"2\"/><circle cx=\"102\" cy=\"62\" r=\"2\"/><circle cx=\"72\" cy=\"96\" r=\"2\"/></g></svg><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 140 150\" class=\"ds-art ds-drink-cup\" role=\"img\" aria-label=\"tea, 80% full\" ><defs><clipPath id=\"bakeria-cup-1\"><path d=\"M33 43h73l-9 72q-27 9-56 0Z\"/></clipPath></defs><g stroke=\"#080808\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    <g class=\"ds-cup-steam\" fill=\"none\" stroke=\"#666\"><path d=\"M54 31q-7-7 0-14t0-13m20 24q-7-7 0-14m19 17q-7-7 0-14\"/></g>\n    <path d=\"M106 54h7c25 0 19 40-11 40\" fill=\"none\" stroke-width=\"7\"/>\n    <path d=\"M29 39h81l-10 82q-30 12-62 0Z\" fill=\"white\"/>\n    <g clip-path=\"url(#bakeria-cup-1)\" stroke=\"none\"><rect x=\"32\" y=\"56.8\" width=\"75\" height=\"85\" fill=\"#d6d6d6\"/><ellipse cx=\"70\" cy=\"56.8\" rx=\"37\" ry=\"5\" fill=\"#e6e6e6\"/></g>\n    <path d=\"M30 39q40 9 79 0\" fill=\"none\"/><path d=\"M97 56H84\" stroke-dasharray=\"3 3\"/><g transform=\"translate(58 78) scale(.7)\"><g fill=\"#080808\" stroke=\"#080808\" stroke-width=\"1.4\" stroke-linejoin=\"round\"><circle cx=\"15\" cy=\"3\" r=\"3\"/><path d=\"M7 5q11-5 12 6l-6 7-4-5Z\"/><path d=\"M8 7 6 11 3 13 6 15 4 17 5 19 10 21 12 17 11 14 15 14 13 10Z\" fill=\"white\"/><path d=\"M6 11h3m2 10 3 6\" fill=\"none\"/></g></g>\n    \n    \n  </g></svg><span class=\"ds-pill\">Ingredients</span></span><span class=\"ds-wait-meter\" aria-label=\"Customer patience 75 percent\"><span style=\"width:75%\"></span></span></span></button>",
+      "css": ".ds-ticket { position:relative; display:grid; grid-template-columns:42px 1fr; gap:14px; width:100%; max-width:350px; padding:18px 0; border:0; border-top:1px solid var(--line, #e6e6e6); background:none; color:var(--ink, #080808); text-align:left; font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); line-height:1.7; cursor:pointer; } .ds-ticket.ds-active { border-top-color:var(--ink, #080808); } .ds-portrait { width:42px; height:54px; overflow:hidden; } .ds-portrait svg { display:block; width:46px; height:57px; } .ds-ticket-name { display:flex; justify-content:space-between; gap:6px; font-size:12px; font-weight:500; letter-spacing:.05em; } .ds-ticket-name > span:last-child { color:var(--grey, #666); font-size:9px; } .ds-ticket-order { display:block; font-size:11px; line-height:1.9; margin:12px 0; letter-spacing:.02em; } .ds-ticket-icons { display:flex; align-items:center; gap:10px; } .ds-ticket-icons svg { width:30px; height:33px; } .ds-pill { font-size:10px; color:var(--grey, #666); padding:3px 0; } .ds-wait-meter { display:block; height:2px; margin-top:17px; background:var(--line, #e6e6e6); } .ds-wait-meter span { display:block; height:100%; background:#888; } .ds-ticket:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; }"
+    },
+    {
+      "name": "Hold Progress Control",
+      "kind": "button",
+      "refersTo": "hold",
+      "description": "An irregular outline for stirring or pouring with visible numerical progress.",
+      "html": "<button class=\"ds-hold\" style=\"--hold:46%\"><span>46% mixed</span></button>",
+      "css": ".ds-hold { position:relative; min-height:56px; width:100%; overflow:hidden; padding:10px 15px; border:1.8px solid var(--ink, #080808); border-radius:28px 24px 27px 23px; background:var(--paper, #fff); color:var(--ink, #080808); font-family:var(--font, 'Avenir Next', 'Trebuchet MS', Arial, sans-serif); font-size:12px; line-height:1.7; letter-spacing:.055em; font-weight:400; touch-action:none; cursor:pointer; } .ds-hold::before { content:''; position:absolute; bottom:0; left:0; width:var(--hold,0%); height:3px; background:var(--ink, #080808); } .ds-hold span { position:relative; } .ds-hold:focus-visible { outline:2px solid var(--ink, #080808); outline-offset:5px; }"
+    },
+    {
+      "name": "Original Stroke Lettering",
+      "kind": "custom",
+      "description": "The actual reusable alphabet, rendered as accessible inline SVG artwork.",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 141 36\" class=\"ds-art ds-hand-letter\" role=\"img\" aria-label=\"mixing\" ><g fill=\"none\" stroke=\"#080808\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 10L3 24M3 14Q7 6 10 13L11 23M10 13Q16 7 19 14L20 23\" transform=\"translate(2 1) rotate(-1 10 16)\"/><path d=\"M8 11L7 23M8 3L8 4\" transform=\"translate(30 0) rotate(0 10 16)\"/><path d=\"M2 10L17 24M16 10L2 23\" transform=\"translate(47 0) rotate(1 10 16)\"/><path d=\"M8 11L7 23M8 3L8 4\" transform=\"translate(72 1) rotate(2 10 16)\"/><path d=\"M3 10L3 24M3 14Q14 4 16 14L17 23\" transform=\"translate(89 0) rotate(-1 10 16)\"/><path d=\"M15 10L15 24Q16 33 5 30M14 12Q2 7 2 17T14 21\" transform=\"translate(114 0) rotate(0 10 16)\"/></g></svg>",
+      "css": ".ds-hand-letter { display:block; width:205px; max-width:100%; height:auto; overflow:visible; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The White Bakery, Drawn in Ink",
+    "overview": "This built world follows the user's HEYTEA reference through open white space, small widely spaced navigation, informal stroke lettering, and black profile figures. Grandma’s Bakeria keeps its own characters and bakery drawings. Warmth comes from Grandma's expression, imperfect strokes, and familiar objects: a bowl, recipe book, pastry, flyer stack, and cup of tea.\n\nIllustration floats directly on the white page. The interface has a light hand: regular or medium local sans text, narrow rules, simple arrows, and grayscale progress. Gameplay keeps the same visual restraint while making the current recipe, ticket, station, and urgent oven state available. The rejected generic bold sans headings and gray card surfaces are outside this world.",
+    "keyCharacteristics": [
+      "Original reusable vector lettering for display headings.",
+      "Solid black hair, expressive profile faces, and open outline bodies.",
+      "Loose line drawings floating in broad white space.",
+      "Small, spaced, regular navigation and readable local sans controls.",
+      "Flat white surfaces, fine separators, and explicit monochrome state feedback."
+    ],
+    "rules": [
+      {
+        "name": "The Paper-and-Ink Rule",
+        "body": "Keep large areas white. Use black for identity and action, and neutral gray for subordinate information or visible preparation state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Handwriting Rule",
+        "body": "Use the original SVG alphabet for short expressive headings, and the local sans stack for instructions, status, controls, and numbers.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "Separate permanent interface regions with space and light rules. Reserve dimmed backdrops for temporary focus sheets.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do follow the user's HEYTEA reference through white space, restrained navigation, original black profile figures, and loose line artwork.",
+      "Do reuse the SVG alphabet and asset generators before adding a new visual vocabulary.",
+      "Do keep art free to float directly on white, with fine rules separating functional regions.",
+      "Do preserve important touch targets, visible focus, persistent tickets and oven alerts, and keyboard or tap alternatives.",
+      "Do pair grayscale state with words, numbers, checks, progress, or another explicit marker.",
+      "Do preserve the complete bakery game while extending this visual system."
+    ],
+    "donts": [
+      "Don't restore generic bold sans hero headings or large gray card surfaces.",
+      "Don't use HEYTEA's logo, brand name, or copied artwork in Grandma’s Bakeria.",
+      "Don't add shadows, decorative gradients, textures, or broad colored surfaces to the permanent interface.",
+      "Don't require downloaded media, fonts, icon packs, sprite sheets, or browser runtime libraries; the sole permitted external image is an optional owner-supplied logo.",
+      "Don't require dragging, rotation, or decorative motion to complete an action."
+    ]
+  }
+}

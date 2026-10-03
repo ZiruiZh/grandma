@@ -4,7 +4,7 @@ export const BUSINESS = {
   tagline: 'A little love in every batch.',
   story: 'Grandma’s recipes bring people together. Help her make a bakery the neighborhood remembers, so she can spend more time baking and less time handing out flyers.',
   introduction: 'Help me bake something people will come back for, and maybe I can finally put these flyers away!',
-  colors: { cream: '#fffefa', ink: '#171717', sage: '#d8d8d2', peach: '#eeeeea', rose: '#bdbdb7' },
+  colors: { cream: '#ffffff', ink: '#080808', sage: '#e8e8e8', peach: '#f4f4f4', rose: '#bdbdbd' },
   logo: '',
   menuUrl: '',
   orderUrl: '',
