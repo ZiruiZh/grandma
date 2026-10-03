@@ -351,6 +351,8 @@ export function dispatch(session, profile, action) {
       order.decoration.sprinkles = Math.min(24, order.decoration.sprinkles + 6); invalidatePackage();
       return success('A cheerful little scatter of sprinkles.', 'sprinkle', { orderId: order.id, x: clamp(action.x ?? 0.5), y: clamp(action.y ?? 0.5) });
     case 'finish-decoration':
+      // A repeated or stale finish input must leave a completed pastry ready.
+      if (order.stage === 'ready') return { ok: true, message: 'Pastry is already finished and ready to serve.' };
       if (!['baked', 'decorating'].includes(order.stage)) return fail('Your pastry needs to come out of the oven first.');
       if (order.family === 'cupcake' && (!order.decoration.frosting || order.decoration.coverage < 0.25)) return fail('Choose a frosting and pipe a little swirl first.');
       order.stage = 'ready';

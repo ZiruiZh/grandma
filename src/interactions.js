@@ -167,7 +167,7 @@ export function bindWorkstations({ root, context, action, commit, feedback }) {
   listen(pourTool,'pointermove',event => { if (gesture?.kind === 'pour-drag') gesture.strength = clamp01(.5 + (event.clientY - gesture.startY) / 90); });
   listen(pourTool,'keydown',event => { if ([' ','Enter'].includes(event.key) && !event.repeat) start('pour-hold',pourTool,event); });
   listen(pourTool,'keyup',event => { if ([' ','Enter'].includes(event.key)) { event.preventDefault(); finish(); } });
-  const canvas = root.querySelector('#decor-canvas');
+  const canvas = root.querySelector('#decor-canvas.can-pipe');
   const pipePoint = event => {
     const point = local(event,canvas), area = pastryArea(context().order.family);
     const inside = insideEllipse(point,area);

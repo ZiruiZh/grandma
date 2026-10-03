@@ -438,6 +438,29 @@ test('continuous input accepts frame-sized amounts and stops cleanly at completi
   assert.ok(Math.abs(order.drinkPrep.fill-.8) < 1e-10);
 });
 
+test('finishing an iced cookie twice stays ready without an oven warning or duplicate completion', () => {
+  const { profile, session } = setup();
+  const order = take(session, profile);
+  mixAndPortion(session, profile, order);
+  act(session, profile, 'start-bake');
+  assert.equal(dispatch(session, profile, { type: 'finish-decoration' }).ok, false);
+  assert.equal(order.stage, 'baking');
+  tick(session, profile, getBakeWindow(order, profile).goldenStart + .5);
+  act(session, profile, 'remove-bake');
+  act(session, profile, 'decorate', { amount: .3, x: .5, y: .5, strokeStart: true });
+  act(session, profile, 'finish-decoration');
+  const finished = structuredClone(order);
+  const events = structuredClone(session.events);
+  const repeat = act(session, profile, 'finish-decoration');
+  assert.equal(repeat.message, 'Pastry is already finished and ready to serve.');
+  assert.deepEqual(order, finished);
+  assert.deepEqual(session.events, events);
+  assert.equal(session.events.filter(event => event.type === 'pastry-ready').length, 1);
+  finishDrink(session, profile, order);
+  act(session, profile, 'package', { packaging: order.takeaway ? 'box' : 'tray' });
+  assert.equal(act(session, profile, 'serve', { customerId: order.customerId }).score.total, 100);
+});
+
 test('optional cookie icing retains separate strokes through saves without changing its recipe score', () => {
   const {profile,session} = setup();
   const order = take(session,profile);
